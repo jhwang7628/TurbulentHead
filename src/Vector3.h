@@ -136,7 +136,7 @@ class Vector3 : public std::vector<T>
         }
 
         // in-place vector normalization
-        Vector3<T>& normalization()
+        Vector3<T>& normalize()
         { 
            T normFactor = this->norm();
            this->div(normFactor); 
@@ -156,8 +156,6 @@ class Vector3 : public std::vector<T>
 
         // -------------- Operator Overload ------------------ //
         
-        //friend ostream& operator << (ostream& os, const Vector3<T>& V);
-
         friend std::ostream &operator<<(std::ostream& os, const Vector3<T>& V)
         {
             os << "{" << V.x << ", " << V.y << ", " << V.z << "}"; 
@@ -165,13 +163,5 @@ class Vector3 : public std::vector<T>
         }
 
 };
-
-//template <class T> 
-//ostream& operator << (ostream& os, const Vector3<T>& V) 
-//{
-//    os << "{" << V.x << ", " << V.y << ", " << V.z << endl; 
-//    return os;
-//}
- 
 
 #endif

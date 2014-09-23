@@ -1,4 +1,5 @@
 #include <iostream> 
+#include <vector>
 
 #include "Vector3.h"
 
@@ -7,7 +8,7 @@ using namespace std;
 int main() { 
 
 
-    Vector3<float> va(1.2,1.1,2.2),vb(1.8,2.2,3.11);
+    Vector3<double> va(1.2,1.1,2.2),vb(1.8,2.2,3.11);
 
 
     cout << va << endl << vb << endl; 
@@ -47,6 +48,19 @@ int main() {
     cout << &vc+1 << endl;
     cout << *(&vc) << endl;
     cout << *(&vc+1) << endl;
+
+
+    vector<Vector3<double> > test; 
+
+
+    cout << va << endl << vb << endl; 
+    test.push_back(va);
+    test.push_back(vb); 
+
+    cout << test[0] << endl << test[1] << endl; 
+
+
+
 
 
 
