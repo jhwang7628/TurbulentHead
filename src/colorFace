@@ -1,0 +1,9 @@
+TARGET = simpleViewer
+CONFIG *= qt opengl release
+QT *= opengl xml
+
+HEADERS = simpleViewer.h
+SOURCES = main.cpp simpleViewer.cpp
+
+INCLUDEPATH += /Users/jui-hsienwang/libQGLViewer/libQGLViewer-2.5.3
+LIBS += -F/Users/jui-hsienwang/Library/Frameworks -framework QGLViewer

@@ -7,9 +7,11 @@
 
 #include <vector> 
 
-
 class vertexData;
 class Data; 
+
+int getdir (std::string dir, std::vector<std::string> &files);
+void ReadSim(std::vector<vertexData> & data);
 
 class vertexData {
     public: 
@@ -39,7 +41,8 @@ class vertexData {
 
             std::cout << "Pressure (t): " << std::endl;
             std::cout << "------------- " << std::endl;
-            for (int i=0; i<this->pressure.size(); i++) 
+            int p_size = this->pressure.size();
+            for (int i=0; i<p_size; i++) 
             {
                 std::cout << pressure[i] << std::endl; 
             }
@@ -50,7 +53,8 @@ class vertexData {
 
             os << "Pressure (t): " << std::endl;
             os << "------------- " << std::endl;
-            for (int i=0; i<this->pressure.size(); i++) 
+            int p_size = this->pressure.size();
+            for (int i=0; i<p_size; i++) 
             {
                 os << pressure[i] << std::endl; 
             }
@@ -62,7 +66,8 @@ class vertexData {
 
             std::cout << "Grad(Pressure) (t): " << std::endl;
             std::cout << "------------------- " << std::endl;
-            for (int i=0; i<this->pressure.size(); i++) 
+            int p_size = this->pressure.size();
+            for (int i=0; i<p_size; i++) 
             {
                 std::cout << gradP[i] << std::endl; 
             }
@@ -74,15 +79,15 @@ class vertexData {
 
             os << "Grad(Pressure) (t): " << std::endl;
             os << "------------------- " << std::endl;
-            for (int i=0; i<this->pressure.size(); i++) 
+            int p_size = this->pressure.size();
+            for (int i=0; i<p_size; i++) 
             {
                 os << gradP[i] << std::endl; 
             }
         }
 
-        double computeSource1();
-
-        double computeSource2();
+        void computeSource1();
+        void computeSource2();
 
         // -------------- Operator Overload ------------------ //
         
@@ -139,7 +144,7 @@ class Data {
             SimSource = targetSimSource; 
         }
 
-        void setNCell(unsigned int NC) 
+t       void setNCell(unsigned int NC) 
         { 
             NCell = NC; 
         }

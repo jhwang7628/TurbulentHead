@@ -40,7 +40,7 @@ int main() {
     cout << "norm: " << va.norm() << endl;
 
     cout << va << endl; 
-    cout << "normalization: " << va.normalization() << endl;
+    cout << "normalization: " << va.normalize() << endl;
 
     Vector3<double> vc;
     vc.push_back(0.0);vc.push_back(1.0);vc.push_back(2.0);

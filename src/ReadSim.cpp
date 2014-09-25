@@ -12,12 +12,11 @@
 
 using namespace std;
 
-int getdir (string dir, vector<string> &files);
 
-int main() {
+void ReadSim(vector<vertexData> & data) {
 
     // each vertex is an object
-    vector<vertexData> data;
+    //vector<vertexData> data;
 
 
     /* Read lists from directory */
@@ -134,35 +133,41 @@ int main() {
     {
         data[i].computeSource1(); 
         data[i].computeSource2(); 
+        cout << "cell" << i << " source1: " << data[i].source1[0] << " " ; 
+        cout << "cell" << i << " source2: " << data[i].source2[0] ; 
+        cout << endl;
     }
 
+    cout << "Print out the source 1" << endl;
+    cout << data[0].source1.size() << endl;
 
-    return 0;
-
-
+    cout << data[0].source1[0] << endl
+         << data[0].source1[1] << endl;
 
 
 }
 
-double vertexData::computeSource1() 
+
+// source 1: dp/dn
+void vertexData::computeSource1() 
 {
     unsigned int Nts = pressure.size();
 
-    for (int i=0; i<Nts; i++) 
+    for (unsigned int i=0; i<Nts; i++) 
     {
-        cout << "acoustic analogy 1: " << i << endl;
         source1.push_back(gradP[i].dot(normals.normalize()));
     }
+
 }
 
-double vertexData::computeSource2()
+// source 2: p*curvature
+void vertexData::computeSource2()
 {
 
     unsigned int Nts = pressure.size();
 
-    for (int i=0; i<Nts; i++) 
+    for (unsigned int i=0; i<Nts; i++) 
     {
-        cout << "acoustic analogy 2: " << i << endl;
         source2.push_back(pressure[i]*curvature);
     }
 }
