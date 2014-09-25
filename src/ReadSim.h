@@ -115,14 +115,12 @@ class Data {
     private: 
         const char* SimSource;
         unsigned int NCell; 
+        unsigned int Nts;
 
     public: 
-//        std::vector<vertexData > vertexdata; 
-//
-//        void setVertexData(vertexData * vD) 
-//        {
-//            this->vertexdata.push_back(*vD); 
-//        }
+        std::vector<vertexData> allVertexData;
+
+        void readVertexData();
 //
 //        vertexData getVertexData(int ind) 
 //        {
@@ -144,7 +142,7 @@ class Data {
             SimSource = targetSimSource; 
         }
 
-t       void setNCell(unsigned int NC) 
+        void setNCell(unsigned int NC) 
         { 
             NCell = NC; 
         }
@@ -154,6 +152,7 @@ t       void setNCell(unsigned int NC)
         {
             setSimSource("ANSYS Fluent");
             NCell = 0;
+            Nts   = 0;
         }
 
 

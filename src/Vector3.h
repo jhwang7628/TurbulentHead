@@ -40,7 +40,7 @@ class Vector3 : public std::vector<T>
         } 
 
         // in-place subtraction
-        Vector3<T>& sub(T targetX, T targetY, T targetZ)
+        Vector3<T>& sub(const T targetX, T targetY, T targetZ)
         {
             x -= targetX; 
             y -= targetY; 
@@ -102,6 +102,50 @@ class Vector3 : public std::vector<T>
             return div(target.x, target.y, target.z);
         } 
 
+        // out-of-place addition
+        Vector3<T> operator + (const Vector3<T>& rhs) const
+        {
+            return Vector3<T>(x + rhs.x, y + rhs.y, z + rhs.z);
+        }
+
+        // out-of-place addition
+        Vector3<T> operator + (const T rhs) const
+        {
+            return Vector3<T>(x + rhs, y + rhs, z + rhs);
+        }
+
+        // out-of-place subtraction 
+        Vector3<T> operator - (const Vector3<T>& rhs) const 
+        {
+            return Vector3<T>(x - rhs.x, y - rhs.y, z - rhs.z);
+        }
+
+        // out-of-place subtraction 
+        Vector3<T> operator - (const T rhs) const 
+        {
+            return Vector3<T>(x - rhs, y - rhs, z - rhs);
+        }
+
+        Vector3<T> operator - () const
+        {
+            return Vector3<T>(-x, -y, -z);
+        }
+
+        /*! Multiplication operator */
+        Vector3<T> operator * (const T& rhs) const
+        {
+            return Vector3<T>(x*rhs, y*rhs, z*rhs);
+        }
+
+        Vector3<T> operator * (const Vector3<T>& rhs) const 
+        {
+            return Vector3<T>(x * rhs.x, y * rhs.y, z * rhs.z);
+        }
+
+        Vector3<T> operator / (const T& rhs) const
+        {
+            return Vector3<T>(x/rhs, y/rhs, z/rhs);
+        }
 
         // -------------- Vector Arithmetics ------------------ //
        
@@ -158,7 +202,8 @@ class Vector3 : public std::vector<T>
         
         friend std::ostream &operator<<(std::ostream& os, const Vector3<T>& V)
         {
-            os << "{" << V.x << ", " << V.y << ", " << V.z << "}"; 
+            //os << "{" << V.x << ", " << V.y << ", " << V.z << "}"; 
+            os << V.x << " " << V.y << " " << V.z; 
             return os;
         }
 
