@@ -292,118 +292,90 @@ void surface::computeK()
    //}
 
    // compute A_voronoi for each vertex
-   ofstream outfile("A_Voronoi.txt");
    for (int i=0; i<Nvert; i++)
    {
-      if (vertlist[i].isOnSurface) 
+      if (!vertlist[i].isOnSurface)
       {
-          //cout << "not on surface " << endl;
-      
-
-          // how many triangles does this vertex possess
-          int N_N1neighbors = vertlist[i].N1neighbors.size();
-
-          vertlist[i].A_Voronoi = 0;
-
-          // list of all neighboring vertices
-          vector<int> neighborVert;
-
-          for (int j=0; j<N_N1neighbors; j++)
-          {
-             //cout << "angles of the N1-neighbors are " << vertlist[i].N1neighbors[j].angle << endl;
-             neighborVert.push_back(vertlist[i].N1neighbors[j].index.x);
-             neighborVert.push_back(vertlist[i].N1neighbors[j].index.y);
-             neighborVert.push_back(vertlist[i].N1neighbors[j].index.z);
-          }
-          if (N_N1neighbors != 0)
-          {
-             sort(neighborVert.begin(), neighborVert.end()); 
-             unique(neighborVert.begin(), neighborVert.end()); 
-          }
-
-          // scan through each neighboring vertex to compute voronoi area
-          double sum_N1AV = 0;
-          for (int j=0; j<neighborVert.size() && (neighborVert[j]!=i); j++) 
-          {
-             int ind_xi = i, ind_xj = neighborVert[j]; 
-
-             // find alpha and beta for each neighbor
-             vector<double> Alpha; 
-
-             findShareTriangles(ind_xi, ind_xj, vertlist[i].N1neighbors, Alpha);
-             cout << "size of Alpha is " << Alpha.size() << endl;
-             cout << "Retrieved Alpha is " << Alpha[0] << " and " << Alpha[1] << endl;
-             //if (Alpha[0] < 0 || Alpha[0] > PI || Alpha[1] < 0 || Alpha[1] > PI) 
-             //{
-             //    cerr << "something is wrong. alpha is greater than 180 or negative. " << endl; 
-             //    exit(1); 
-             //}
-
-             double xij2 = (vertlist[ind_xi].position - vertlist[ind_xj].position).normSq();
-             //if (xij2<0) 
-             //{
-             //    cerr << "something is wrong. xij2 is negative. " << endl; 
-             //    exit(1); 
-             //}
-             //cout << "alpha = " << Alpha[0] << ", beta = " << Alpha[1] << endl;
-             double tmp = (1.0/tan(Alpha[0]) + 1.0/tan(Alpha[1]))*xij2;
-             if (tmp>0) 
-             {
-                 sum_N1AV += tmp;
-                 //cerr << "something is wrong. tmp is negative. " << endl; 
-                 //exit(1); 
-             }
-          }
-          vertlist[i].A_Voronoi = 1.0/8.0*sum_N1AV;
-          //if (vertlist[i].A_Voronoi<0) 
-          //{
-          //    cerr << "something is wrong. cell Voronoi area is negative. " << endl; 
-          //    //exit(1); 
-          //}
-          cout << "the Voronoi area for vertex " << i << " is " << vertlist[i].A_Voronoi << endl;
-          outfile << vertlist[i].A_Voronoi << endl;
-
-
+          cout << "not on surface " << endl;
+          break;
       }
 
+      // how many triangles does this vertex possess
+      int N_N1neighbors = vertlist[i].N1neighbors.size();
+
+      vertlist[i].A_Voronoi = 0;
+
+      // list of all neighboring vertices
+      vector<int> neighborVert;
+
+      for (int j=0; j<N_N1neighbors; j++)
+      {
+         //cout << "angles of the N1-neighbors are " << vertlist[i].N1neighbors[j].angle << endl;
+         neighborVert.push_back(vertlist[i].N1neighbors[j].index.x);
+         neighborVert.push_back(vertlist[i].N1neighbors[j].index.y);
+         neighborVert.push_back(vertlist[i].N1neighbors[j].index.z);
+      }
+      if (N_N1neighbors != 0)
+      {
+         sort(neighborVert.begin(), neighborVert.end()); 
+         unique(neighborVert.begin(), neighborVert.end()); 
+      }
+
+      // scan through each neighboring vertex to compute voronoi area
+      double sum_N1AV = 0;
+      for (int j=0; j<neighborVert.size() && (neighborVert[j]!=i); j++) 
+      {
+         int ind_xi = i, ind_xj = neighborVert[j]; 
+
+         // find alpha and beta for each neighbor
+         vector<double> Alpha; 
+
+         findShareTriangles(ind_xi, ind_xj, vertlist[i].N1neighbors, Alpha);
+         cout << "size of Alpha is " << Alpha.size() << endl;
+         cout << "Retrieved Alpha is " << Alpha[0] << " and " << Alpha[1] << endl;
+
+         double xij2 = (vertlist[ind_xi].position - vertlist[ind_xj].position).normSq();
+         //cout << "alpha = " << Alpha[0] << ", beta = " << Alpha[1] << endl;
+         sum_N1AV += (1.0/tan(Alpha[0]) + 1.0/tan(Alpha[1]))*xij2;
+      }
+      vertlist[i].A_Voronoi = 1.0/8.0*sum_N1AV;
+      cout << "the Voronoi area for vertex " << i << " is " << vertlist[i].A_Voronoi << endl;
+
+
+
+
+
+
    }
-   outfile.close();
 
 
    // Compute A_mixed area and curvature
-   for (int i=0; i<Nvert; i++) 
-   {
-      if (vertlist[i].isOnSurface)
-      {
+   //for (int i=0; i<Nvert; i++) 
+   //{
 
-          vertlist[i].A_mixed = 0;
+   //   vertlist[i].A_mixed = 0;
 
-          int N_N1neighbors = vertlist[i].N1neighbors.size();
-          
-          for (int j=0; j<N_N1neighbors; j++) 
-          {
-             if (!vertlist[i].N1neighbors[j].isObtuse) 
-             {
-                vertlist[i].A_mixed += vertlist[i].A_Voronoi; 
-             }
-             else 
-             {
-                if (vertlist[i].N1neighbors[j].ObtuseIndex == i)
-                {
-                   cout << "trilist[j].area = " << trilist[j].area << endl;
-                   vertlist[i].A_mixed += trilist[j].area / 2.0; 
-                }
-                else 
-                {
-                   cout << "trilist[j].area = " << trilist[j].area << endl;
-                   vertlist[i].A_mixed += trilist[j].area / 4.0; 
-                }
-             }
-          }
-
-      //vertlist[i].curvature = 1.0/2.0/A_mixed 
-      }
-   }
+   //   int N_N1neighbors = vertlist[i].N1neighbors.size();
+   //   
+   //   for (int j=0; j<N_N1neighbors; j++) 
+   //   {
+   //      if (!vertlist[i].N1neighbors[j].isObtuse) 
+   //      {
+   //         vertlist[i].A_mixed += A_Voronoi; 
+   //      }
+   //      else 
+   //      {
+   //         if (vertlist[i].N1neighbors[j].ObtuseIndex == i)
+   //         {
+   //            vertlist[i].A_mixed += trilist[j].area / 2; 
+   //         }
+   //         else 
+   //         {
+   //            vertlist[i].A_mixed += trilist[j].area / 4; 
+   //         }
+   //      }
+   //   }
+   //}
 
 
 

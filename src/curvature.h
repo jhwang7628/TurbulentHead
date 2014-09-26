@@ -30,9 +30,10 @@ class surface
     public : 
         vector<tri> trilist; 
         vector<vert> vertlist;
+        //void printsomething(int ind_xi, int ind_xj, vector<tri>& triRange, vector<double>& alpha);
+        void findShareTriangles(const int ind_xi, const int ind_xj, const vector<tri>& triRange, vector<double>& alpha);
         void computeK(); 
         //void findShareTriangles(const int ind_xi, const int ind_xj, tri& triA, tri& triB); 
-        void findShareTriangles(const int ind_xi, const int ind_xj, const vector<tri>& triRange, vector<tri>& SharedTri);
 
         surface(){ type="mesh";}
             
@@ -57,6 +58,16 @@ class tri
         double area; 
         bool isObtuse; // one angle is greater than 90
         int ObtuseIndex;
+
+        void printIndex() 
+        {
+            cout << "index of triangle = " << "(" << index.x << ", "  << index.y << ", " << index.z << ")" << endl;
+        }
+
+        bool equals(const tri& t) const
+        {
+            return (index.x == t.index.x && index.y == t.index.y && index.z == t.index.z);
+        }
 
         friend std::ostream &operator<<(std::ostream& os, const tri& t)
         {
@@ -83,6 +94,7 @@ class vert
         double A_Voronoi;
         double A_mixed; // see Mark Meyer's discrete curvature paper
         double curvature;
+        bool isOnSurface; 
 
         //friend std::ostream &operator<<(std::ostream& os, const vert & v)
         //{
@@ -92,6 +104,7 @@ class vert
         //}
         //
 };
+          
 
 
 
