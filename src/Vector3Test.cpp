@@ -16,6 +16,14 @@ int main() {
     cout << "add: " << va.add(1.0,1.0,1.0) << endl;
 
     cout << va << endl << vb << endl; 
+    Vector3<double> T = va+vb; 
+    cout << "not-inplace add: " << T << endl;
+    cout << "is va the same as tmpVec3? " << (&T == &va) << endl;
+    T = va + 1.0;
+    cout << "not-inplace add: " << T << endl;
+    cout << "is va the same as tmpVec3? " << (&T == &va) << endl;
+
+    cout << va << endl << vb << endl; 
     cout << "sub: " << va.sub(vb) << endl;
     cout << "sub: " << va.sub(1.0,1.0,1.0) << endl;
 

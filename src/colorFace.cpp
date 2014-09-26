@@ -17,8 +17,9 @@ void Viewer::init()
 
   readData(); 
   Nts = data[0].pressure.size(); 
-  std::cout << "Nts is " << Nts << std::endl;
   NCell = data.size(); 
+  std::cout << "Nts is " << Nts << std::endl;
+  std::cout << "NCell is " << NCell << std::endl;
   counter=0;
 
   source1max=0; 
@@ -32,6 +33,9 @@ void Viewer::init()
         double s2 = data[i].source2[j];
         if (abs(s1)>source1max) { source1max=abs(s1); } 
         if (abs(s2)>source2max) { source2max=abs(s2); } 
+        std::cout << "(i,j) = " << i << " " << j << std::endl;
+        std::cout << "source1max is " << source1max << std::endl;
+        std::cout << "source2max is " << source2max << std::endl;
      }
   }
 
@@ -39,8 +43,8 @@ void Viewer::init()
   std::cout << "max source2 " << source2max << std::endl;
 
 
-  data[0].printPressure();
-  data[1].printPressure();
+  //data[0].printPressure();
+  //data[1].printPressure();
 
 
   //std::cout << NCell << " " << Nts << std::endl;
@@ -62,7 +66,7 @@ void Viewer::init()
 
   glPointSize(5.0);
   setGridIsDrawn(false);
-  setAnimationPeriod(1000);
+  setAnimationPeriod(100);
   startAnimation();
 }
 
