@@ -112,7 +112,7 @@ void Particle::animate()
 
 void Particle::draw()
 {
-  glColor3f(col_r, 0.0f , col_b);
+  glColor3f(col_r, 0.0f , 0.0f);
   glVertex3fv(pos_);
 }
 

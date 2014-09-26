@@ -144,7 +144,7 @@ class Data {
             SimSource = targetSimSource; 
         }
 
-t       void setNCell(unsigned int NC) 
+        void setNCell(unsigned int NC) 
         { 
             NCell = NC; 
         }
