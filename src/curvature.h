@@ -20,6 +20,7 @@ class Mesh
     public : 
         surface* meshSurface; 
         void readMesh();
+           
 };
 
 class surface  
@@ -29,6 +30,9 @@ class surface
     public : 
         vector<tri> trilist; 
         vector<vert> vertlist;
+        void computeK(); 
+        //void findShareTriangles(const int ind_xi, const int ind_xj, tri& triA, tri& triB); 
+        void findShareTriangles(const int ind_xi, const int ind_xj, const vector<tri>& triRange, vector<tri>& SharedTri);
 
         surface(){ type="mesh";}
             
@@ -40,6 +44,7 @@ class surface
             os << "Surface type: " << s->type; 
             return os;
         }
+
         
 };
 
@@ -48,6 +53,7 @@ class tri
 {
     public: 
         Vector3<int> index; // the index to the vertices
+        Vector3<double> angle; // angle corresponding to each vertex of the triangle
         double area; 
         bool isObtuse; // one angle is greater than 90
         int ObtuseIndex;
@@ -59,6 +65,13 @@ class tri
             return os;
         }
 
+        tri()
+        {
+           area = 0; 
+           isObtuse = false; 
+           ObtuseIndex = 0;
+        };
+
 };
 
 class vert  
@@ -67,6 +80,7 @@ class vert
         Vector3<double> position; 
         Vector3<double> normal;
         vector<tri> N1neighbors; // the one-ring neighbor triangles to this vertex
+        double A_Voronoi;
         double A_mixed; // see Mark Meyer's discrete curvature paper
         double curvature;
 
@@ -76,6 +90,7 @@ class vert
         //    os << v.position << endl; 
         //    return os;
         //}
+        //
 };
 
 
