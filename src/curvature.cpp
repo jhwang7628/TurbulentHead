@@ -6,6 +6,7 @@
 #include "curvature.h" 
 
 
+using namespace qglviewer;
 using namespace std; 
 
 static const double PI=3.14159265359;
@@ -406,21 +407,36 @@ void surface::computeK()
    }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
+
+void Viewer::init()
+{
+   restoreStateFromFile(); 
+   glDisable(GL_LIGHTING);
+
+   glPointSize(3.0); 
+   setGridIsDrawn(false); 
+}
+
+void Viewer::draw(surface* Head)
+{
+   glBegin(GL_POINTS);
+
+   for (int i=0; i<Head->vertlist.size(); i++) 
+   {
+      if (Head->vertlist[i].isOnSurface())
+      {
+         glColor3f(1.0f, 1.0f, 1.0f); 
+         glVertex3fv(Head->vertlist[i].position); 
+      }
+   }
+
+   glEnd(); 
+}
+
+
+
+
+   
 
 
