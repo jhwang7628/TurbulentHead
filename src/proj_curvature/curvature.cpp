@@ -28,6 +28,132 @@ int main(int argc, char** argv)
   //return 0;
 }
 
+void Mesh::readOBJ (string filename)
+{
+    meshSurface = new surface();
+
+    filename = "../../testCase/spherePatch.obj";
+    cout << "reading mesh " << filename << endl;
+
+    ifstream in(filename.c_str(), ios::in);
+    if (!in) { cerr << "Cannot open " << filename << endl; exit(1); }
+
+
+    string line;
+    while (getline(in, line)) 
+    { 
+       if (line.substr(0,2) == "v ") 
+       { 
+          vert newVert;
+          newVert.isOnSurface=false;
+          istringstream iss(line.substr(2)); 
+          double xBuff, yBuff, zBuff; 
+
+          iss >> xBuff >> yBuff >> zBuff; 
+
+          newVert.position.x = xBuff; newVert.position.y = yBuff; newVert.position.z = zBuff;
+
+          meshSurface->vertlist.push_back(newVert); 
+
+          //fobj << "v " << newVert.position << endl;
+
+       } 
+       else if (line.substr(0,2) == "f ") 
+       { 
+            tri newTri;
+            istringstream iss(line.substr(2)); 
+
+            int i0, i1, i2; 
+
+            iss >> i0 >> i1 >> i2; 
+
+            // turn it into zero-based
+            newTri.index.x = i0-1;
+            newTri.index.y = i1-1; 
+            newTri.index.z = i2-1;
+
+            Vector3<double> v0 = (meshSurface->vertlist)[i0].position;
+            Vector3<double> v1 = (meshSurface->vertlist)[i1].position;
+            Vector3<double> v2 = (meshSurface->vertlist)[i2].position;
+            
+            Vector3<double> v01 = v1 - v0; 
+            Vector3<double> v02 = v2 - v0; 
+            Vector3<double> v12 = v2 - v1;
+
+            //cout << "v1 = " << v1 << endl;
+            //cout << "v01 = " << v01 << endl;
+
+
+            double cos_t0 =  v01.dot(v02)/v01.norm()/v02.norm();
+            double cos_t1 = -v01.dot(v12)/v01.norm()/v12.norm();
+            double cos_t2 =  v02.dot(v12)/v02.norm()/v12.norm();
+
+            newTri.angle.x = acos(cos_t0); 
+            newTri.angle.y = acos(cos_t1); 
+            newTri.angle.z = acos(cos_t2);
+
+            int count =0 ;
+            if ( cos_t0<0 )
+            {
+               newTri.isObtuse = true;
+               newTri.ObtuseIndex = i0;
+               count ++; 
+            }
+            else if ( cos_t1<0 ) 
+            {
+               newTri.isObtuse = true;
+               newTri.ObtuseIndex = i1;
+               count ++; 
+            }
+            else if ( cos_t2<0 ) 
+            {
+               newTri.isObtuse = true;
+               newTri.ObtuseIndex = i2;
+               count ++; 
+            }
+
+            if (count >1)
+            {
+               cerr << "something is wrong. there are two obtuse angles for a single triangle. " << endl;
+               exit(1); 
+            }
+
+            // NOTE: in-place cross product applied here!
+            Vector3<double> triNormal = v01.cross(v02);
+
+            // add the area-weighted triangle normal to the vertex 
+            meshSurface->vertlist[i0].normal.add(triNormal); 
+            meshSurface->vertlist[i1].normal.add(triNormal); 
+            meshSurface->vertlist[i2].normal.add(triNormal); 
+
+            //cout << "isOnSurface of this vertex "  << meshSurface->vertlist[i0].isOnSurface << endl;
+            meshSurface->vertlist[i0].isOnSurface = true; 
+            meshSurface->vertlist[i1].isOnSurface = true; 
+            meshSurface->vertlist[i2].isOnSurface = true; 
+
+            //cout << "i0 = " << meshSurface->vertlist[i0].position << endl;
+            //cout << "i1 = " << meshSurface->vertlist[i1].position << endl;
+            //cout << "i2 = " << meshSurface->vertlist[i2].position << endl;
+            newTri.area = 0.5*triNormal.norm();
+
+            // push back the triangle into the list
+            //cout << "newTri.angle = " << newTri.angle << endl;
+
+            meshSurface->trilist.push_back(newTri); 
+            meshSurface->vertlist[i0].N1neighbors.push_back(newTri); 
+            meshSurface->vertlist[i1].N1neighbors.push_back(newTri); 
+            meshSurface->vertlist[i2].N1neighbors.push_back(newTri); 
+       }
+       else if (line[0] == '#') { /* ignoring this line */ }
+       else { /* ignoring this line */ }
+    }
+
+    
+
+
+
+}
+
 
 // data parser //
 void Mesh::readMesh () 
@@ -36,7 +162,7 @@ void Mesh::readMesh ()
 
     const char* filename = "../jhwang.msh";
 
-    ofstream fobj("tmp.obj"); 
+    ofstream fobj("HumanHead-2.obj"); 
 
 
     ifstream inhead(filename, ios::in); 
@@ -72,7 +198,8 @@ void Mesh::readMesh ()
 
         meshSurface->vertlist.push_back(newVert); 
 
-        fobj << "v " << meshSurface->vertlist[meshSurface->vertlist.size()-1].position << endl;
+        fobj << "v " << newVert.position << endl;
+        //fobj << "v " << meshSurface->vertlist[meshSurface->vertlist.size()-1].position << endl;
 
     }
 
@@ -203,7 +330,8 @@ void Mesh::readMesh ()
             meshSurface->vertlist[i2].N1neighbors.push_back(newTri); 
 
 
-            fobj << "f " << meshSurface->trilist[meshSurface->trilist.size()-1].index << endl;
+            fobj << "f " << (newTri.index+1) << endl;
+            //fobj << "f " << meshSurface->trilist[meshSurface->trilist.size()-1].index << endl;
             push_back_count += 3;
 
 
@@ -467,8 +595,14 @@ void Viewer::init()
    glPointSize(5.0); 
    setGridIsDrawn(false); 
 
-   mesh->readMesh();
-   (mesh->meshSurface)->computeK();
+   // const char* filename;
+   string filename;
+   cout << "Input the OBJ file to read: " << endl;
+   getline(cin, filename);
+
+   //mesh->readMesh();
+   mesh->readOBJ(filename);
+   //mesh->meshSurface->computeK();
    //cout << " YEAHYEAHYEAH " << endl;
 }
 

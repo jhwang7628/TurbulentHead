@@ -18,6 +18,8 @@ class Mesh
     public : 
         surface* meshSurface; 
         void readMesh();
+        // void readOBJ(const char* filename); 
+        void readOBJ(std::string filename);
            
 };
 

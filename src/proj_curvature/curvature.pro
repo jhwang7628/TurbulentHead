@@ -5,5 +5,6 @@ QT *= opengl xml
 HEADERS = curvature.h 
 SOURCES = curvature.cpp
 
-INCLUDEPATH += /Users/jui-hsienwang/libQGLViewer/libQGLViewer-2.5.3 /Users/jui-hsienwang/glm
-LIBS += -F/Users/jui-hsienwang/Library/Frameworks -framework QGLViewer
+
+INCLUDEPATH *= /usr/include /home/jui-hsienwang/glm
+LIBS *= -L/usr/lib -lQGLViewer
