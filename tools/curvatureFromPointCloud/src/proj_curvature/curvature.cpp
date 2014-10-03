@@ -145,11 +145,17 @@ void Mesh::readOBJ (string filename)
 
             // push back the triangle into the list
             //cout << "newTri.angle = " << newTri.angle << endl;
-
+            neighbor newNeighbor;
+            newNeighbor.neighborTri = newTri;
             meshSurface->trilist.push_back(newTri); 
-            meshSurface->vertlist[i0].N1neighbors.push_back(newTri); 
-            meshSurface->vertlist[i1].N1neighbors.push_back(newTri); 
-            meshSurface->vertlist[i2].N1neighbors.push_back(newTri); 
+            meshSurface->vertlist[i0].N1neighbors.push_back(newNeighbor); 
+            meshSurface->vertlist[i1].N1neighbors.push_back(newNeighbor); 
+            meshSurface->vertlist[i2].N1neighbors.push_back(newNeighbor); 
+
+            //meshSurface->trilist.push_back(newTri); 
+            //meshSurface->vertlist[i0].N1neighbors.push_back(newTri); 
+            //meshSurface->vertlist[i1].N1neighbors.push_back(newTri); 
+            //meshSurface->vertlist[i2].N1neighbors.push_back(newTri); 
 
             newTri.printIndex();
 
@@ -344,10 +350,12 @@ void Mesh::readMesh ()
             // push back the triangle into the list
             //cout << "newTri.angle = " << newTri.angle << endl;
 
+            neighbor newNeighbor;
+            newNeighbor.neighborTri = newTri;
             meshSurface->trilist.push_back(newTri); 
-            meshSurface->vertlist[i0].N1neighbors.push_back(newTri); 
-            meshSurface->vertlist[i1].N1neighbors.push_back(newTri); 
-            meshSurface->vertlist[i2].N1neighbors.push_back(newTri); 
+            meshSurface->vertlist[i0].N1neighbors.push_back(newNeighbor); 
+            meshSurface->vertlist[i1].N1neighbors.push_back(newNeighbor); 
+            meshSurface->vertlist[i2].N1neighbors.push_back(newNeighbor); 
 
 
             fobj << "f " << (newTri.index+1) << endl;
@@ -459,186 +467,73 @@ void surface::computeK()
    int Ntri = (this->trilist).size();
    int Nvert = (this->vertlist).size();
 
-   // mark the N1 neighbors for each vertex
-   //for (int i=0; i<Ntri; i++)
-   //{
+   // compute A_mixed for each vertex
+   //ofstream outfile("A_Voronoi.txt");
+   //ofstream outfile2("curvature.txt");
+   ofstream fK("computedK.txt"); 
+   ofstream fA("A_mixed.txt");
 
-   //   cout << "filling N1 neighbors for triangle " << i+1 << "/" << Ntri << endl;
-   //   int i0 = trilist[i].index.x; 
-   //   int i1 = trilist[i].index.y; 
-   //   int i2 = trilist[i].index.z; 
-   //   vertlist[i0].N1neighbors.push_back(trilist[i]);
-   //   vertlist[i1].N1neighbors.push_back(trilist[i]);
-   //   vertlist[i2].N1neighbors.push_back(trilist[i]);
-   //}
-
-   // compute A_voronoi for each vertex
-   ofstream outfile("A_Voronoi.txt");
-   ofstream outfile2("K_xi.txt");
    for (int i=0; i<Nvert; i++)
    {
       if (vertlist[i].isOnSurface) 
       {
-          //cout << "not on surface " << endl;
-      
-
-          // how many triangles does this vertex possess
-          int N_N1neighbors = vertlist[i].N1neighbors.size();
-
-          vertlist[i].A_Voronoi = 0;
-
-          // list of all neighboring vertices
-          vector<int> neighborVert;
-          vector<int>::iterator it; 
-
-          cout << "vertex " << i << " has " << N_N1neighbors << " neighbor triangles. " << endl;
-          for (int j=0; j<N_N1neighbors; j++)
-          {
-             //cout << "angles of the N1-neighbors are " << vertlist[i].N1neighbors[j].angle << endl;
-             neighborVert.push_back(vertlist[i].N1neighbors[j].index.x);
-             neighborVert.push_back(vertlist[i].N1neighbors[j].index.y);
-             neighborVert.push_back(vertlist[i].N1neighbors[j].index.z);
-          }
-          if (N_N1neighbors != 0)
-          {
-              cout << "======= before sort ======" << endl;
-             for ( int k=0; k<neighborVert.size(); k++) 
-             {
-                   cout << "vertex " << i << " has neighbor vertex " << neighborVert[k] << endl;
-             }
-             sort(neighborVert.begin(), neighborVert.end()); 
-              cout << "======= after sort ======" << endl;
-             for ( int k=0; k<neighborVert.size(); k++) 
-             {
-                   cout << "vertex " << i << " has neighbor vertex " << neighborVert[k] << endl;
-             }
-             it = unique(neighborVert.begin(), neighborVert.end()); 
-             neighborVert.resize( distance(neighborVert.begin(),it) );
-              cout << "======= after unique ======" << endl;
-             for ( int k=0; k<neighborVert.size(); k++) 
-             {
-                   cout << "vertex " << i << " has neighbor vertex " << neighborVert[k] << endl;
-             }
-          }
-
-          cout << "======= outside the loop ======" << endl;
-
-          for ( int k=0; k<neighborVert.size(); k++) 
-          {
-                cout << "vertex " << i << " has neighbor vertex " << neighborVert[k] << endl;
-          }
-          cout << "vertex " << i << " has " << neighborVert.size() << " neighbor vertices. " << endl;
-
-          // scan through each neighboring vertex to compute voronoi area
-          double sum_N1AV = 0;
-          Vector3<double> sum_N1NK;
-          for (unsigned long j=0; j<neighborVert.size(); j++) 
-          {
-             if (neighborVert[j]!=i)
-             {
-                int ind_xi = i, ind_xj = neighborVert[j]; 
-
-                // find alpha and beta for each neighbor
-                vector<double> Alpha; 
-
-                findShareTriangles(ind_xi, ind_xj, vertlist[i].N1neighbors, Alpha);
-                //cout << "size of Alpha is " << Alpha.size() << endl;
-                //cout << "Retrieved Alpha is " << Alpha[0] << " and " << Alpha[1] << endl;
-                //if (Alpha[0] < 0 || Alpha[0] > PI || Alpha[1] < 0 || Alpha[1] > PI) 
-                //{
-                //    cerr << "something is wrong. alpha is greater than 180 or negative. " << endl; 
-                //    exit(1); 
-                //}
-
-                double xij2 = (vertlist[ind_xi].position - vertlist[ind_xj].position).normSq();
-                // the vector distance 
-                Vector3<double> xij_current = (vertlist[ind_xi].position - vertlist[ind_xj].position);
-                //if (xij2<0) 
-                //{
-                //    cerr << "something is wrong. xij2 is negative. " << endl; 
-                //    exit(1); 
-                //}
-                //cout << "alpha = " << Alpha[0] << ", beta = " << Alpha[1] << endl;
-                //double tmp = (1.0/tan(Alpha[0]) + 1.0/tan(Alpha[1]))*xij2;
-                double cot_alpha_sum = 1.0/tan(Alpha[0]) + 1.0/tan(Alpha[1]);
-                cout << "For (i,j) = " << ind_xi << ", " << ind_xj << endl;
-                cout << "Alpha 0: " << Alpha[0]*180/PI << "; Alpha 1: " << Alpha[1]*180/PI << endl;
-                if (Alpha[0] < 1e-8 || Alpha[1] < 1e-8)
-                {
-                   cout << "vert " << i << " has zero alphas " << endl;
-                   cout << "alpha 0 " << Alpha[0] << endl;
-                   cout << "alpha 1 " << Alpha[1] << endl;
-                   //exit(1);
-                }
-                //cout << "tmp = " << tmp <<  endl;
-                //if (tmp>0) 
-                //{
-                cout << "sum_N1NK = " << sum_N1NK << endl;
-                cout << "xij_current = " << xij_current << endl;
-                sum_N1AV += cot_alpha_sum * xij2;
-                sum_N1NK.add(xij_current*cot_alpha_sum);
-                    //cerr << "something is wrong. tmp is negative. " << endl; 
-                    //exit(1); 
-                //}
-             }
-          }
-          vertlist[i].A_Voronoi = 1.0/8.0*sum_N1AV;
-          vertlist[i].K_xi_wo_Amixed = sum_N1NK;
-          //if (vertlist[i].A_Voronoi<0) 
-          //{
-          //    cerr << "something is wrong. cell Voronoi area is negative. " << endl; 
-          //    //exit(1); 
-          //}
-          //cout << "the Voronoi area for vertex " << i << " is " << vertlist[i].A_Voronoi << endl;
-          outfile << vertlist[i].A_Voronoi << endl;
-          outfile2<< vertlist[i].K_xi_wo_Amixed << endl;
-
-
-
-      }
-
-   }
-
-
-
-   outfile.close();
-   outfile2.close();
-
-
-   ofstream fK("computedK.txt"); 
-   ofstream fA("A_mixed.txt");
-
-   // Compute A_mixed area and curvature
-   for (int i=0; i<Nvert; i++) 
-   {
-       cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-       cout <<" come onnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn " << i << endl;
-      if (vertlist[i].isOnSurface)
-      {
-       cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-       cout <<" come onnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn " << i << endl;
-       cout << "How many neighbor points? " << vertlist[i].N1neighbors.size() << endl;
-
-         //cout << "==========vertex " << i << endl;
 
           vertlist[i].A_mixed = 0;
 
-          int N_N1neighbors = vertlist[i].N1neighbors.size();
-          
-          for (int j=0; j<N_N1neighbors; j++) 
+          for (unsigned int j=0; j<vertlist[i].N1neighbors.size(); j++) 
           {
-             //cout << "(i,j) = " << i << ", " << j << endl;
-             if (!vertlist[i].N1neighbors[j].isObtuse) 
+             tri tmpTri = vertlist[i].N1neighbors[j].neighborTri;
+             double PR2, PQ2; 
+             double cotQ, cotR;
+             Vector3<double> PR, PQ; 
+             if (i == tmpTri.index.x)
              {
-                 cout << "isNOTObtuse!" << endl;
+                 PR = vertlist[tmpTri.index.x].position - vertlist[tmpTri.index.y].position;
+                 PR2 = PR.normSq();
+                 cotQ = 1.0/tan(tmpTri.angle.z);
+                 PQ = vertlist[tmpTri.index.x].position - vertlist[tmpTri.index.z].position;
+                 PQ2 = PQ.normSq();
+                 cotR = 1.0/tan(tmpTri.angle.y);
+             }
+             else if (i == tmpTri.index.y)
+             {
+                 PR = vertlist[tmpTri.index.y].position - vertlist[tmpTri.index.x].position;
+                 PR2 = PR.normSq();
+                 cotQ = 1.0/tan(tmpTri.angle.z);
+                 PQ = vertlist[tmpTri.index.y].position - vertlist[tmpTri.index.z].position;
+                 PQ2 = PQ.normSq();
+                 cotR = 1.0/tan(tmpTri.angle.x);
+             }
+             else if (i == tmpTri.index.z)
+             {
+                 PR = vertlist[tmpTri.index.z].position - vertlist[tmpTri.index.x].position;
+                 PR2 = PR.normSq();
+                 cotQ = 1.0/tan(tmpTri.angle.y);
+                 PQ = vertlist[tmpTri.index.z].position - vertlist[tmpTri.index.y].position;
+                 PQ2 = PQ.normSq();
+                 cotR = 1.0/tan(tmpTri.angle.x);
+             }
+             else
+             {
+                 cerr << "i does not match any index in tmpTri. Abort" << endl;
+                 exit(1);
+             }
+
+             vertlist[i].K_xi_wo_Amixed = vertlist[i].K_xi_wo_Amixed + PR.mul(cotQ) + PQ.mul(cotR);
+
+             if (!vertlist[i].N1neighbors[j].neighborTri.isObtuse) 
+             {
+                vertlist[i].N1neighbors[j].A_Voronoi = 1.0/8.0*(PR2*cotQ + PQ2*cotR);
+
+                cout << "is NOT Obtuse!" << endl;
                 cout << "Voronoi region added" << endl;
-                vertlist[i].A_mixed += vertlist[i].A_Voronoi; 
+                vertlist[i].A_mixed += vertlist[i].N1neighbors[j].A_Voronoi; 
              }
              else 
              {
-                 cout << "isObtuse!" << endl;
-                 cout << vertlist[i].N1neighbors[j].ObtuseIndex << endl;
-                if (vertlist[i].N1neighbors[j].ObtuseIndex == i)
+                 cout << "isObtuse! Obtuse index is: " ;
+                 cout << vertlist[i].N1neighbors[j].neighborTri.ObtuseIndex << endl;
+                if (vertlist[i].N1neighbors[j].neighborTri.ObtuseIndex == i)
                 {
                    cout << "Triangle area / 2.0 added" << endl;
                    //cout << "trilist[j].area = " << trilist[j].area << endl;
@@ -653,6 +548,7 @@ void surface::computeK()
              }
           }
 
+
           Vector3<double> K_xi = vertlist[i].K_xi_wo_Amixed.mul(1.0/vertlist[i].A_mixed);
           //K_xi.mul(1.0/2.0/vertlist[i].A_mixed);
 
@@ -662,12 +558,138 @@ void surface::computeK()
           fK << vertlist[i].curvature << endl;
           fA << vertlist[i].A_mixed << endl;
       }
-
-      
    }
 
    fA.close();
    fK.close();
+          ////cout << "not on surface " << endl;
+      
+
+          //// how many triangles does this vertex possess
+          //int N_N1neighbors = vertlist[i].N1neighbors.size();
+
+          ////vertlist[i].A_Voronoi = 0;
+
+          //// list of all neighboring vertices
+          //vector<int> neighborVert;
+          //vector<int>::iterator it; 
+
+          ////cout << "vertex " << i << " has " << N_N1neighbors << " neighbor triangles. " << endl;
+          //for (int j=0; j<N_N1neighbors; j++)
+          //{
+          //   //cout << "angles of the N1-neighbors are " << vertlist[i].N1neighbors[j].angle << endl;
+          //   neighborVert.push_back(vertlist[i].N1neighbors[j].neighborTri.index.x);
+          //   neighborVert.push_back(vertlist[i].N1neighbors[j].neighborTri.index.y);
+          //   neighborVert.push_back(vertlist[i].N1neighbors[j].neighborTri.index.z);
+          //}
+          //if (N_N1neighbors != 0)
+          //{
+          //   // cout << "======= before sort ======" << endl;
+          //   //for ( int k=0; k<neighborVert.size(); k++) 
+          //   //{
+          //   //      cout << "vertex " << i << " has neighbor vertex " << neighborVert[k] << endl;
+          //   //}
+          //   sort(neighborVert.begin(), neighborVert.end()); 
+          //   // cout << "======= after sort ======" << endl;
+          //   //for ( int k=0; k<neighborVert.size(); k++) 
+          //   //{
+          //   //      cout << "vertex " << i << " has neighbor vertex " << neighborVert[k] << endl;
+          //   //}
+          //   it = unique(neighborVert.begin(), neighborVert.end()); 
+          //   neighborVert.resize( distance(neighborVert.begin(),it) );
+          //   // cout << "======= after unique ======" << endl;
+          //   //for ( int k=0; k<neighborVert.size(); k++) 
+          //   //{
+          //   //      cout << "vertex " << i << " has neighbor vertex " << neighborVert[k] << endl;
+          //   //}
+          //}
+
+          //cout << "======= outside the loop ======" << endl;
+
+          //for ( int k=0; k<neighborVert.size(); k++) 
+          //{
+          //      cout << "vertex " << i << " has neighbor vertex " << neighborVert[k] << endl;
+          //}
+          //cout << "vertex " << i << " has " << neighborVert.size() << " neighbor vertices. " << endl;
+
+          // scan through each neighboring vertex to compute voronoi area
+
+
+
+
+
+
+   //       double sum_N1AV = 0;
+   //       Vector3<double> sum_N1NK;
+   //       for (unsigned long j=0; j<neighborVert.size(); j++) 
+   //       {
+   //          if (neighborVert[j]!=i)
+   //          {
+   //             int ind_xi = i, ind_xj = neighborVert[j]; 
+
+   //             // find alpha and beta for each neighbor
+   //             vector<double> Alpha; 
+
+   //             findShareTriangles(ind_xi, ind_xj, vertlist[i].N1neighbors, Alpha);
+   //             //cout << "size of Alpha is " << Alpha.size() << endl;
+   //             //cout << "Retrieved Alpha is " << Alpha[0] << " and " << Alpha[1] << endl;
+   //             //if (Alpha[0] < 0 || Alpha[0] > PI || Alpha[1] < 0 || Alpha[1] > PI) 
+   //             //{
+   //             //    cerr << "something is wrong. alpha is greater than 180 or negative. " << endl; 
+   //             //    exit(1); 
+   //             //}
+
+   //             double xij2 = (vertlist[ind_xi].position - vertlist[ind_xj].position).normSq();
+   //             // the vector distance 
+   //             Vector3<double> xij_current = (vertlist[ind_xi].position - vertlist[ind_xj].position);
+   //             //if (xij2<0) 
+   //             //{
+   //             //    cerr << "something is wrong. xij2 is negative. " << endl; 
+   //             //    exit(1); 
+   //             //}
+   //             //cout << "alpha = " << Alpha[0] << ", beta = " << Alpha[1] << endl;
+   //             //double tmp = (1.0/tan(Alpha[0]) + 1.0/tan(Alpha[1]))*xij2;
+   //             double cot_alpha_sum = 1.0/tan(Alpha[0]) + 1.0/tan(Alpha[1]);
+   //             cout << "For (i,j) = " << ind_xi << ", " << ind_xj << endl;
+   //             cout << "Alpha 0: " << Alpha[0]*180/PI << "; Alpha 1: " << Alpha[1]*180/PI << endl;
+   //             if (Alpha[0] < 1e-8 || Alpha[1] < 1e-8)
+   //             {
+   //                cout << "vert " << i << " has zero alphas " << endl;
+   //                cout << "alpha 0 " << Alpha[0] << endl;
+   //                cout << "alpha 1 " << Alpha[1] << endl;
+   //                //exit(1);
+   //             }
+   //             //cout << "tmp = " << tmp <<  endl;
+   //             //if (tmp>0) 
+   //             //{
+   //             cout << "sum_N1NK = " << sum_N1NK << endl;
+   //             cout << "xij_current = " << xij_current << endl;
+   //             sum_N1AV += cot_alpha_sum * xij2;
+   //             sum_N1NK.add(xij_current*cot_alpha_sum);
+   //                 //cerr << "something is wrong. tmp is negative. " << endl; 
+   //                 //exit(1); 
+   //             //}
+   //          }
+   //       }
+   //       vertlist[i].A_Voronoi = 1.0/8.0*sum_N1AV;
+   //       vertlist[i].K_xi_wo_Amixed = sum_N1NK;
+   //       //if (vertlist[i].A_Voronoi<0) 
+   //       //{
+   //       //    cerr << "something is wrong. cell Voronoi area is negative. " << endl; 
+   //       //    //exit(1); 
+   //       //}
+   //       //cout << "the Voronoi area for vertex " << i << " is " << vertlist[i].A_Voronoi << endl;
+   //       outfile << vertlist[i].A_Voronoi << endl;
+   //       outfile2<< vertlist[i].K_xi_wo_Amixed << endl;
+
+
+
+   //   }
+
+   //}
+
+
+
 
 
 }
@@ -825,9 +847,9 @@ void Viewer::init()
     for (int ii=0; ii<mesh->meshSurface->vertlist[12].N1neighbors.size(); ii++)
     {
         cout << "vert 12's " << ii << "-th neighbor has angle: " << 
-            mesh->meshSurface->vertlist[12].N1neighbors[ii].angle/3.1415926*180.0 << endl;
+            mesh->meshSurface->vertlist[12].N1neighbors[ii].neighborTri.angle/3.1415926*180.0 << endl;
         cout << "vert 12's " << ii << "-th neighbor is obtuse?: " << 
-            mesh->meshSurface->vertlist[12].N1neighbors[ii].isObtuse << endl;
+            mesh->meshSurface->vertlist[12].N1neighbors[ii].neighborTri.isObtuse << endl;
         //cout << "vert 12's " << ii << "-th neighbor has the index: " << endl;
         //mesh->meshSurface->vertlist[12].N1neighbors[ii].printIndex(); 
     }

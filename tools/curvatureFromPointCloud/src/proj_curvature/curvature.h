@@ -88,25 +88,24 @@ class tri
 
 };
 
+class neighbor
+{
+    public: 
+        tri neighborTri; 
+        double A_Voronoi; // corresponding to the neighborTri;
+};
+
+
 class vert  
 {
     public: 
         Vector3<double> position; 
         Vector3<double> normal;
-        vector<tri> N1neighbors; // the one-ring neighbor triangles to this vertex
-        double A_Voronoi;
+        vector<neighbor> N1neighbors; // stores information of the 1-ring neighbors
         double A_mixed; // see Mark Meyer's discrete curvature paper
         double curvature;
         bool isOnSurface; 
         Vector3<double> K_xi_wo_Amixed;
-
-        //friend std::ostream &operator<<(std::ostream& os, const vert & v)
-        //{
-        //    //os << "{" << V.x << ", " << V.y << ", " << V.z << "}"; 
-        //    os << v.position << endl; 
-        //    return os;
-        //}
-        //
 };
 
 
