@@ -114,6 +114,7 @@ class Viewer : public QGLViewer
    protected : 
       virtual void draw(); 
       virtual void init(); 
+      void assignK(Mesh *mesh);
       // virtual void animate();
    private : 
       //surface* Head = new surface; 
