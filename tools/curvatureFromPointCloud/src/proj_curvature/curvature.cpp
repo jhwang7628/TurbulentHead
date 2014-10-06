@@ -3,6 +3,7 @@
 #include <string> 
 #include <vector>
 #include <algorithm>
+#include <stdio.h>
 #include <qapplication.h>
 #include "curvature.h" 
 
@@ -599,6 +600,10 @@ void Viewer::assignK(Mesh * mesh)
 {
     ifstream in("testData");
     ofstream out("assignedK");
+    FILE * pFile; 
+
+    pFile = fopen("computedK.txt", "w");
+    
 
     string line;
     int countPoint = 0;
@@ -617,6 +622,8 @@ void Viewer::assignK(Mesh * mesh)
         // have to do this otherwise won't find it..
         fluentCoord.x = abs(fluentCoord.x);
         out << fluentCoord << " ";
+        //cout << fluentCoord << endl;
+        fprintf(pFile, "%.9E %.9E %.9E ", fluentCoord.x,fluentCoord.y,fluentCoord.z);
 
         unsigned int bestInd=0; 
         for (unsigned int i=0; i<mesh->meshSurface->vertlist.size(); i++)
@@ -624,12 +631,17 @@ void Viewer::assignK(Mesh * mesh)
             if (mesh->meshSurface->vertlist[i].isOnSurface)
             {
                 // cout << i << " " 
-                Vector3<double> tmpPosition = mesh->meshSurface->vertlist[i].position; 
-                tmpPosition.x = abs(tmpPosition.x);
-                if ((tmpPosition - fluentCoord).normSq() < 1e-12)
+                Vector3<double> tmpPosition  = mesh->meshSurface->vertlist[i].position; 
+                Vector3<double> tmpPosition2 = fluentCoord; 
+                tmpPosition .x = abs(tmpPosition .x);
+                tmpPosition2.x = abs(tmpPosition2.x);
+                
+                if ((tmpPosition - tmpPosition2).normSq() < 1e-12)
                 {
                     bestInd = i; 
+                    //fprintf(pFile, ")
                     out << mesh->meshSurface->vertlist[i].curvature << endl;
+                    fprintf(pFile, "%.9f\n", mesh->meshSurface->vertlist[i].curvature);
                     //out << mesh->meshSurface->vertlist[i].position << " " << mesh->meshSurface->vertlist[i].curvature << endl;
                     //cout << "bestInd updated at index " << i << ", the position for this vertex is " << mesh->meshSurface->vertlist[i].position << endl;
                 }
@@ -666,6 +678,9 @@ void Viewer::assignK(Mesh * mesh)
     }
 
     cout << "outlier = " << countoutlier << endl;
+
+    out.close(); 
+    fclose(pFile);
 
 
 }
@@ -718,34 +733,7 @@ void Viewer::assignK(Mesh * mesh)
           glVertex3fv(vertPos); 
        }
     }
-
-    //cout << "ocunt_onsurface = " << count_onsurface << endl;
-    //cout << "vert 0 is on surface?" << mesh->meshSurface->vertlist[0].isOnSurface << endl;
-    //cout << "vert 1 is on surface?" << mesh->meshSurface->vertlist[1].isOnSurface << endl;
- 
     glEnd(); 
-
-    //cout << "vert 12 position: " << mesh->meshSurface->vertlist[12].position << endl;
-    //cout << "vert 12 N1neighbors size: " << mesh->meshSurface->vertlist[12].N1neighbors.size() << endl;
-
-    //for (int ii=0; ii<mesh->meshSurface->vertlist.size(); ii++) 
-    //{
-    //    cout << "vert " << ii << "'s normals are: " << 
-    //        mesh->meshSurface->vertlist[ii].normal << endl;
-    //    //cout << "vert " << ii << "'s Voronoi are is: " << 
-    //    //    mesh->meshSurface->vertlist[ii].A_Voronoi << endl;
-    //}
-
-    //for (int ii=0; ii<mesh->meshSurface->vertlist[12].N1neighbors.size(); ii++)
-    //{
-    //    cout << "vert 12's " << ii << "-th neighbor has angle: " << 
-    //        mesh->meshSurface->vertlist[12].N1neighbors[ii].neighborTri.angle/3.1415926*180.0 << endl;
-    //    cout << "vert 12's " << ii << "-th neighbor is obtuse?: " << 
-    //        mesh->meshSurface->vertlist[12].N1neighbors[ii].neighborTri.isObtuse << endl;
-    //    //cout << "vert 12's " << ii << "-th neighbor has the index: " << endl;
-    //    //mesh->meshSurface->vertlist[12].N1neighbors[ii].printIndex(); 
-    //}
-
  
  
     glBegin(GL_TRIANGLES);
