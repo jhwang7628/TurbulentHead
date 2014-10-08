@@ -6,6 +6,11 @@
 #include <stdio.h>
 #include <qapplication.h>
 #include "curvature.h" 
+#include <QMenu>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QMap>
+#include <QCursor>
 
 
 using namespace qglviewer;
@@ -602,6 +607,8 @@ void Viewer::init()
    glPointSize(6.0); 
    setGridIsDrawn(false); 
 
+   singleChannel_ = false;
+
    // const char* filename;
    string filename;
    cout << "Input the OBJ file to read: " << endl;
@@ -610,7 +617,7 @@ void Viewer::init()
    //mesh->readOBJ(filename);
    mesh->readMesh();
    mesh->meshSurface->computeK();
-   assignK(mesh);
+   //assignK(mesh);
    //
 
    cout << "There are " << mesh->meshSurface->Nnanvert << " nan vertex curvatures (zeroed-out). " << endl;
@@ -630,6 +637,57 @@ void Viewer::init()
       }
    }
 
+}
+
+void Viewer::keyPressEvent(QKeyEvent *e)
+{
+  // Get event modifiers key
+  const Qt::KeyboardModifiers modifiers = e->modifiers();
+
+  // A simple switch on e->key() is not sufficient if we want to take state key into account.
+  // With a switch, it would have been impossible to separate 'F' from 'CTRL+F'.
+  // That's why we use imbricated if...else and a "handled" boolean.
+  bool handled = false;
+  if ((e->key()==Qt::Key_W) && (modifiers==Qt::NoButton))
+	{
+	  wireframe_ = !wireframe_;
+	  if (wireframe_)
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	  else
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	  handled = true;
+	  updateGL();
+	}
+  else if ((e->key()==Qt::Key_F) && (modifiers==Qt::NoButton))
+	  {
+	flatShading_ = !flatShading_;
+	if (flatShading_)
+	  glShadeModel(GL_FLAT);
+	else
+	  glShadeModel(GL_SMOOTH);
+	handled = true;
+	updateGL();
+	  }
+  else if ((e->key()==Qt::Key_U) && (modifiers==Qt::NoButton))
+	  {
+          max_curv = max_curv*0.9; 
+          cout << "max_curv = " << max_curv << endl;
+	  }
+  else if ((e->key()==Qt::Key_D) && (modifiers==Qt::NoButton))
+	  {
+          max_curv = max_curv*1.1; 
+          cout << "max_curv = " << max_curv << endl;
+	  }
+  else if ((e->key()==Qt::Key_C) && (modifiers==Qt::NoButton))
+	  {
+          singleChannel_ = !singleChannel_;
+	  }
+
+        
+  // ... and so on with other else/if blocks.
+
+  if (!handled)
+	QGLViewer::keyPressEvent(e);
 }
 
 void Viewer::assignK(Mesh * mesh)

@@ -144,12 +144,14 @@ class Viewer : public QGLViewer
    protected : 
       virtual void draw(); 
       virtual void init(); 
+      virtual void keyPressEvent(QKeyEvent *e);
       void assignK(Mesh *mesh);
       double max_curv;
       // virtual void animate();
    private : 
       //surface* Head = new surface; 
       Mesh *mesh;
+      bool wireframe_, flatShading_, singleChannel_;
    public:
       Viewer()
       {
