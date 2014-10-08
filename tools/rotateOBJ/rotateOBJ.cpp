@@ -8,6 +8,7 @@
 
 #define pi 3.14159265359
 
+
 using namespace std;
 
 /* Argument in: 
@@ -22,39 +23,50 @@ using namespace std;
  */
 int main(int argc, char* argv[])
 {
-   if ((argc-2)%4 != 0 || (argc-2)/4 != (float) atof(argv[1]))
-   {
-      cout << (argc-2)%4 << endl;
-      cout << (argc-2)/4 << endl;
-      cout << (float) atof(argv[1]) << endl;
-      cout << "Number of input argument is incorrect!" << argc << endl;
-      exit(1);
-   }
 
    rotationData rot;
-   
-   rot.N = (argc-2)/4;
 
-   for (int i=0; i<rot.N; i++) 
+   if (argc == 1)
    {
-      rot.axis.push_back((float) atof(argv[i*4+2]));
-      rot.axis.push_back((float) atof(argv[i*4+3]));
-      rot.axis.push_back((float) atof(argv[i*4+4]));
-      rot.angle.push_back((float) atof(argv[i*4+5])/180*pi);
-      cout << "Rotation axis #" << i << " = ["   << rot.axis[i*3]
-           << " "                                << rot.axis[i*3+1] 
-           << " "                                << rot.axis[i*3+2] << "]" << endl;
-      cout << "Rotation angle #" << i << " = " << rot.angle[i] << "(rad)" << endl;
+       cout << "no rotation is applied" << endl;
+   }
+   else
+   {
+        if ((argc-2)%4 != 0 || (argc-2)/4 != (double) atof(argv[1]))
+        {
+           cout << (argc-2)%4 << endl;
+           cout << (argc-2)/4 << endl;
+           cout << (double) atof(argv[1]) << endl;
+           cout << "Number of input argument is incorrect!" << argc << endl;
+           exit(1);
+        }
+        
+        rot.N = (argc-2)/4;
+
+        for (int i=0; i<rot.N; i++) 
+        {
+           rot.axis.push_back((double) atof(argv[i*4+2]));
+           rot.axis.push_back((double) atof(argv[i*4+3]));
+           rot.axis.push_back((double) atof(argv[i*4+4]));
+           rot.angle.push_back((double) atof(argv[i*4+5])/180*pi);
+           cout << "Rotation axis #" << i << " = ["   << rot.axis[i*3]
+                << " "                                << rot.axis[i*3+1] 
+                << " "                                << rot.axis[i*3+2] << "]" << endl;
+           cout << "Rotation angle #" << i << " = " << rot.angle[i] << "(rad)" << endl;
+        }
    }
 
 
 
-   const char* filename = "HumanHead-2.obj";
+   //const char* filename = "HumanHead-2.obj";
+   string filename;
+   cout << "Input the obj file that is being rotated: " << endl;
+   getline(cin,filename);
 
    data outData1; 
 
 
-   loadOBJ(filename, outData1, rot); 
+   loadOBJ(filename.c_str(), outData1, rot); 
 
    return 0;
 }
@@ -63,8 +75,11 @@ int main(int argc, char* argv[])
 void loadOBJ(const char* filename, data outData, rotationData rot)
 {
    ifstream  in(filename, ios::in); 
-   ofstream out("newOBJ.obj", ios::out); 
-   ofstream debug("debug.txt");
+   FILE * out;
+   //ofstream out("newOBJ.obj", ios::out); 
+   out = fopen("newOBJ.obj", "w");
+
+   //ofstream debug("debug.txt");
    if (!in) { cerr << "Cannot open " << filename << endl; exit(1); }
 
    string line; 
@@ -73,24 +88,28 @@ void loadOBJ(const char* filename, data outData, rotationData rot)
       if (line.substr(0,2) == "v ") 
       { 
          outData.vertexCount ++; 
-         cout << outData.vertexCount << endl;
+         //cout << outData.vertexCount << endl;
          istringstream s(line.substr(2));
-         vector<float> v(3);
+         vector<double> v(3);
          s >> v[0]; s >> v[1]; s >> v[2]; 
 //         cout << "New Vertex ===" << endl;
 //         cout << v[0] << " " << v[1] << " " << v[2] << endl;
 
-         for (int i=0; i<rot.N; i++)
+         if (rot.N != 0) 
          {
-            vector<float> axis_i(3,0);
-            axis_i[0] = rot.axis[i*3];
-            axis_i[1] = rot.axis[i*3+1];
-            axis_i[2] = rot.axis[i*3+2];
-            rotate3(v[0], v[1], v[2], axis_i, rot.angle[i]);
-//            cout << "rotation #" << i << endl;
-//            cout << v[0] << " " << v[1] << " " << v[2] << endl;
-            out << "v " << v[0] << " " << v[1] << " " << v[2] << endl;
+            for (int i=0; i<rot.N; i++)
+            {
+               vector<double> axis_i(3,0);
+               axis_i[0] = rot.axis[i*3];
+               axis_i[1] = rot.axis[i*3+1];
+               axis_i[2] = rot.axis[i*3+2];
+               rotate3(v[0], v[1], v[2], axis_i, rot.angle[i]);
+            }
          }
+       
+         fprintf(out, "v %.9f %.9f %.9f \n", v[0], v[1], v[2]);
+
+         //out << "v " << v[0] << " " << v[1] << " " << v[2] << endl;
 
          outData.positions.push_back(v[0]); 
          outData.positions.push_back(v[1]); 
@@ -102,15 +121,17 @@ void loadOBJ(const char* filename, data outData, rotationData rot)
          stringstream ss(line.substr(2));
          string token, token2;
          int intBuff, Ncount=0;
-         out << "f ";
+         fprintf(out, "f ");
+         //out << "f ";
          int count2=0;
-         cout << line << endl;
+         //cout << line << endl;
          while (ss >> intBuff) 
          { 
              count2++;
-             out << intBuff << " ";
+             fprintf(out, "%d ", intBuff);
+             //out << intBuff << " ";
          }
-         debug << count2 << endl;
+         //debug << count2 << endl;
 
          // while (getline(ss,token,'/'))
          // {
@@ -131,19 +152,21 @@ void loadOBJ(const char* filename, data outData, rotationData rot)
          //     }
          // }
          // cout << endl;
-         out  << endl;
+         //out  << endl;
+         fprintf(out, "\n");
       }
       if (line.substr(0,3) == "vn ") 
       { 
          outData.vertexNormalCount ++; 
          cout << outData.vertexNormalCount << endl;
          istringstream s(line.substr(2));
-         vector<float> v(3);
+         vector<double> v(3);
          s >> v[0]; s >> v[1]; s >> v[2]; 
 //         cout << "New Vertex ===" << endl;
 //         cout << v[0] << " " << v[1] << " " << v[2] << endl;
 
-         out << "vn " << v[0] << " " << v[1] << " " << v[2] << endl;
+         //out << "vn " << v[0] << " " << v[1] << " " << v[2] << endl;
+         fprintf(out, "vn %.9f %.9f %.9f\n", v[0], v[1], v[2]);
 
          outData.vertexNormal.push_back(v[0]); 
          outData.vertexNormal.push_back(v[1]); 
@@ -153,13 +176,16 @@ void loadOBJ(const char* filename, data outData, rotationData rot)
       else if (line[0] == '#') { /* ignoring this line */ }
       else { /* ignoring this line */ }
    }
+
+
+   fclose(out);
 }
 
-void rotate3(float &x, float &y, float &z, vector<float> axis_i, float angle_i)
+void rotate3(double &x, double &y, double &z, vector<double> axis_i, double angle_i)
 {
-   float norm_axis;
-   vector<float> n_axis(3,0.0);
-   vector<float> R(9,0);
+   double norm_axis;
+   vector<double> n_axis(3,0.0);
+   vector<double> R(9,0);
 
    norm_axis = sqrt(pow(axis_i[0],2) + pow(axis_i[1],2) + pow(axis_i[2],2));
    n_axis[0] = axis_i[0] / norm_axis; 
@@ -188,7 +214,7 @@ void rotate3(float &x, float &y, float &z, vector<float> axis_i, float angle_i)
 
 //   for (int i=0; i<3; i++)
 //      cout << R[i*3] << " " << R[i*3+1] << " " << R[i*3+2] << endl; 
-   float x_, y_, z_;
+   double x_, y_, z_;
 
    x_ = R[0] * x + R[1] * y + R[2] * z;
    y_ = R[3] * x + R[4] * y + R[5] * z;

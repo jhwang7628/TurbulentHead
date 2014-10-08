@@ -8,8 +8,8 @@ class data
       int indexCount;
       int vertexCount;
       int vertexNormalCount; 
-      vector<float> positions; 
-      vector<float> vertexNormal; 
+      vector<double> positions; 
+      vector<double> vertexNormal; 
       vector<int> NnodePerFace; 
       vector<int> index; 
 
@@ -34,8 +34,8 @@ class rotationData
 {
    public: 
       int N; // number of rotation
-      vector<float> axis; 
-      vector<float> angle;
+      vector<double> axis; 
+      vector<double> angle;
 
       rotationData()
       {
@@ -44,4 +44,4 @@ class rotationData
 };
 
 void loadOBJ(const char* filename, data outData, rotationData rot);
-void rotate3(float &x, float &y, float &z, vector<float> axis_i, float angle_i);
+void rotate3(double &x, double &y, double &z, vector<double> axis_i, double angle_i);

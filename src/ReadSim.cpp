@@ -8,6 +8,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <vector>
+#include <stdio.h>
 #include <algorithm>
 
 using namespace std;
@@ -25,27 +26,36 @@ void ReadSim(vector<vertexData> & data) {
     getdir(dir,filenames);
 
     unsigned int Nts = filenames.size();
-    Nts = 5; 
+    unsigned int file_start = 500;
+    Nts = 100;
+    Nts = filenames.size()-file_start; 
+
+    file_start = 0;
+    Nts = filenames.size();
 
 
-    ifstream fin((dir+"/"+filenames[0]).c_str(),ios::in);
+    ifstream fin((dir+"/"+filenames[file_start]).c_str(),ios::in);
     if (fin.is_open()) 
     {
-        cout << "File " << filenames[0] << " opened successfully. " << 1 << "/" << Nts << endl;
+        cout << "File " << filenames[file_start] << " opened successfully. " << file_start+1 << "/" << Nts+file_start+1 << endl;
     }
     else 
     { 
-        cerr << "Cannot read file " << filenames[0] << ". Aborting.." << endl; exit(1); 
+        cerr << "Cannot read file " << filenames[file_start] << ". Aborting.." << endl; exit(1); 
     }
 
+    ifstream curvin("../tools/curvature/computedK.txt");
+
     /* Read time data */
-    string header, line;
+    string header, line, line_curv;
     getline(fin,header);
     unsigned int NCell = 0;
     while (getline(fin,line))
     { 
+        getline(curvin, line_curv); 
         vertexData currentData;
         istringstream ssin(line); 
+        istringstream ssin_curv(line_curv); 
         int node;
         double x,y,z; 
         double k; 
@@ -56,7 +66,12 @@ void ReadSim(vector<vertexData> & data) {
         ssin >> x >> y >> z; 
         ssin >> k; 
 
-        cout << "read in curvature k: " << k << endl;
+        double doubleBuff;
+
+        // the recomputed curvature using the discrete implementation
+        ssin_curv >> doubleBuff >> doubleBuff >> doubleBuff >> k;
+
+        //cout << "read in curvature k: " << k << endl;
         // be careful about the order of fluent output data
         ssin >> nz >> ny >> nx;
         ssin >> dpz >> dpy >> dpx; 
@@ -84,16 +99,17 @@ void ReadSim(vector<vertexData> & data) {
     } 
 
     fin.close();
+    curvin.close();
 
 
     /* Read subsequent time data */
-    for (unsigned int i=1; i<5; i++) 
-    //for (unsigned int i=1; i<Nts; i++) 
+    //for (unsigned int i=1; i<5; i++) 
+    for (unsigned int i=file_start+1; i<Nts+file_start; i++) 
     {
         ifstream fin((dir+"/"+filenames[i]).c_str(),ios::in);
         if (fin.is_open()) 
         {
-            cout << "File " << filenames[i] << " opened successfully. " << i+1 << "/" << Nts << endl;
+            cout << "File " << filenames[i] << " opened successfully. " << i+1 << "/" << Nts+file_start+1 << endl;
         }
         else 
         { 
@@ -131,13 +147,17 @@ void ReadSim(vector<vertexData> & data) {
     }
 
 
-    ofstream fpos("../out/positions.txt",ios::binary);
-    ofstream fs1 ("../out/source1.txt",ios::binary); 
-    ofstream fs2 ("../out/source2.txt",ios::binary); 
+    FILE *fP, *fpos, *fs1, *fs2, *fnor, *fgradP; 
+    fP    = fopen("../out/pressure.txt" ,"w"); 
+    fgradP= fopen("../out/gradP.txt" ,"w"); 
+    fpos  = fopen("../out/positions.txt","w");
+    fnor  = fopen("../out/normals.txt"  ,"w");
+    fs1   = fopen("../out/source1.txt"  ,"w"); 
+    fs2   = fopen("../out/source2.txt"  ,"w"); 
 
-    cout << "debug flag" << endl;
-    cout << "NCell is " << NCell << endl; 
-    cout << "Nts is " << Nts << endl;
+
+    //cout << "NCell is " << NCell << endl; 
+    //cout << "Nts is " << Nts << endl;
     for (unsigned int i=0; i<NCell; i++) 
     {
         data[i].computeSource1(); 
@@ -146,21 +166,36 @@ void ReadSim(vector<vertexData> & data) {
         {
             //cout << "cell" << i << " source1: " << data[i].source1[j] << " " ; 
             //cout << "cell" << i << " source2: " << data[i].source2[j] ; 
-            fs1 << data[i].source1[j] << " " ; 
-            fs2 << data[i].source2[j] << " " ; 
+            fprintf(fs1, "%.9f ", data[i].source1 [j]);
+            fprintf(fs2, "%.9f ", data[i].source2 [j]);
+            fprintf(fP , "%.9f ", data[i].pressure[j]);
+            fprintf(fgradP, "%.9f %.9f %.9f\n", data[i].gradP[j].x
+                                              , data[i].gradP[j].y
+                                              , data[i].gradP[j].z);
+            //fs1 << data[i].source1[j] << " " ; 
+            //fs2 << data[i].source2[j] << " " ; 
 
         }
         //cout << endl;
-        fs1  << endl; 
-        fs2  << endl;
-        fpos << data[i].positions << endl; 
+        fprintf(fs1, "\n");
+        fprintf(fs2, "\n");
+        fprintf(fP , "\n");
+        //fs1  << endl; 
+        //fs2  << endl;
+        //fpos << data[i].positions << endl; 
+        fprintf(fpos, "%.9f %.9f %.9f\n", data[i].positions.x
+                                      , data[i].positions.y
+                                      , data[i].positions.z);
+        fprintf(fnor, "%.9f %.9f %.9f\n", data[i].normals.x
+                                      , data[i].normals.y
+                                      , data[i].normals.z);
     }
 
-    for (unsigned int i=0; i<NCell; i++)
-    {
-        //data[i].printPressure(); 
-        cout << "curvature " << i << " is " << data[i].curvature << endl;
-    }
+    //for (unsigned int i=0; i<NCell; i++)
+    //{
+    //    //data[i].printPressure(); 
+    //    cout << "curvature " << i << " is " << data[i].curvature << endl;
+    //}
 
 
 

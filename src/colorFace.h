@@ -10,7 +10,7 @@ public :
   void init();
   void draw();
   void animate();
-  double col_r, col_b;
+  double col_r, col_b, col_g;
   qglviewer::Vec pos_;
 
 };
@@ -20,6 +20,7 @@ class Viewer : public QGLViewer
 protected :
   virtual void draw();
   virtual void init();
+  virtual void keyPressEvent(QKeyEvent *e);
   virtual void animate();
   virtual void readData(); 
 
@@ -30,6 +31,7 @@ private :
   Particle* particle_;
   std::vector<vertexData> data; 
   double source1max, source2max; 
+  bool wireframe_, flatShading_, singleChannel_;
 
 };
 
