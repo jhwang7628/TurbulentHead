@@ -1,11 +1,9 @@
 #ifndef VECTOR3_H
 #define VECTOR3_H
 
-#ifndef CMATH
-#define CMATH
 #include <cmath>
 #include <vector>
-#endif
+#include <iostream>
 
 template <class T> 
 class Vector3 : public std::vector<T>

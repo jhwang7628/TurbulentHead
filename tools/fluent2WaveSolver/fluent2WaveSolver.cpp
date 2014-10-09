@@ -20,7 +20,6 @@ int main() {
     string filename, filename_out;
     filename = "../curvature/computedK.txt"; 
     filename_out = "wavesolver_input";
-    filename_out = "wavesolver_input_reverse";
     FILE *file_out; 
 
     file_out = fopen(filename_out.c_str(), "w");
@@ -59,7 +58,6 @@ int main() {
         //cout << "=======rotation========" << endl;
         //cout << pos[i] << endl;
         rotate3(pos[i].x, pos[i].y, pos[i].z, axis_i, 3.14159265359/2.0);
-        rotate3(pos[i].x, pos[i].y, pos[i].z, axis_i,-3.14159265359/2.0);
         //cout << pos[i] << endl;
         fprintf(file_out, "%.9E %.9E %.9E\n", pos[i].x, pos[i].y, pos[i].z);
     }
