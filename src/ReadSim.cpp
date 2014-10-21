@@ -10,6 +10,7 @@
 #include <vector>
 #include <stdio.h>
 #include <algorithm>
+#include <cstdlib>
 
 using namespace std;
 
@@ -20,31 +21,54 @@ void ReadSim(vector<vertexData> & data) {
     //vector<vertexData> data;
 
     /* Read lists from directory */
-    string dir = string("../testData");
+    //string dir = string("../testData");
+    string dir;
+    string dir_out;
+    cout << "Where are the surfacepressure data? input directory path: " << endl;
+    getline(cin, dir);
+    cout << "Select output directory:" << endl;
+    getline(cin, dir_out);
     vector<string> filenames = vector<string>();
 
     getdir(dir,filenames);
 
-    unsigned int Nts = filenames.size();
-    unsigned int file_start = 500;
-    Nts = 100;
-    Nts = filenames.size()-file_start; 
+    //unsigned int Nts = filenames.size();
+    //unsigned int file_start = 500;
+    //Nts = 100;
+    //Nts = filenames.size()-file_start; 
 
-    file_start = 0;
-    Nts = filenames.size();
+    //file_start = 0;
+    //Nts = filenames.size();
+
+
+    string file_start_string; 
+    cout << "input file_start: " << endl;
+    getline(cin,file_start_string);
+    unsigned int file_start = atoi(file_start_string.c_str()); 
+    unsigned int Nts = filenames.size();
+
+    if (file_start + Nts > filenames.size())
+    {
+        Nts = filenames.size() - file_start;
+        cout << "file_start = " << file_start << endl;
+        cout << "Nts = " << Nts << endl;
+    }
 
 
     ifstream fin((dir+"/"+filenames[file_start]).c_str(),ios::in);
     if (fin.is_open()) 
     {
-        cout << "File " << filenames[file_start] << " opened successfully. " << file_start+1 << "/" << Nts+file_start+1 << endl;
+        cout << "File " << filenames[file_start] << " opened successfully. " << file_start+1 << "/" << Nts+file_start << endl;
     }
     else 
     { 
         cerr << "Cannot read file " << filenames[file_start] << ". Aborting.." << endl; exit(1); 
     }
 
-    ifstream curvin("../tools/curvature/computedK.txt");
+    //ifstream curvin("../tools/curvature/computedK.txt");
+    ifstream curvin("computedK.txt");
+
+    if (!curvin) { cerr << " cannot open file computedK.txt " << endl; exit(1);  }
 
     /* Read time data */
     string header, line, line_curv;
@@ -109,7 +133,7 @@ void ReadSim(vector<vertexData> & data) {
         ifstream fin((dir+"/"+filenames[i]).c_str(),ios::in);
         if (fin.is_open()) 
         {
-            cout << "File " << filenames[i] << " opened successfully. " << i+1 << "/" << Nts+file_start+1 << endl;
+            cout << "File " << filenames[i] << " opened successfully. " << i+1 << "/" << Nts+file_start << endl;
         }
         else 
         { 
@@ -146,20 +170,23 @@ void ReadSim(vector<vertexData> & data) {
         fin.close();
     }
 
-
     FILE *fP, *fpos, *fs1, *fs2, *fnor, *fgradP; 
-    fP    = fopen("../out/pressure.txt" ,"w"); 
-    fgradP= fopen("../out/gradP.txt" ,"w"); 
-    fpos  = fopen("../out/positions.txt","w");
-    fnor  = fopen("../out/normals.txt"  ,"w");
-    fs1   = fopen("../out/source1.txt"  ,"w"); 
-    fs2   = fopen("../out/source2.txt"  ,"w"); 
+    string fs1_path = dir_out + "/source1.txt";
+    string fs2_path = dir_out + "/source2.txt";
+    //fP    = fopen("../out/pressure.txt" ,"w"); 
+    //fgradP= fopen("../out/gradP.txt" ,"w"); 
+    //fpos  = fopen("../out/positions.txt","w");
+    //fnor  = fopen("../out/normals.txt"  ,"w");
+    fs1   = fopen(fs1_path.c_str()  ,"w"); 
+    fs2   = fopen(fs2_path.c_str()  ,"w"); 
 
 
     //cout << "NCell is " << NCell << endl; 
     //cout << "Nts is " << Nts << endl;
     for (unsigned int i=0; i<NCell; i++) 
     {
+        cout << "cell " << i << endl; 
+        cout << data.size() << endl;
         data[i].computeSource1(); 
         data[i].computeSource2(); 
         for (unsigned int j=0; j<Nts; j++)
@@ -168,28 +195,32 @@ void ReadSim(vector<vertexData> & data) {
             //cout << "cell" << i << " source2: " << data[i].source2[j] ; 
             fprintf(fs1, "%.9f ", data[i].source1 [j]);
             fprintf(fs2, "%.9f ", data[i].source2 [j]);
-            fprintf(fP , "%.9f ", data[i].pressure[j]);
-            fprintf(fgradP, "%.9f %.9f %.9f\n", data[i].gradP[j].x
-                                              , data[i].gradP[j].y
-                                              , data[i].gradP[j].z);
-            //fs1 << data[i].source1[j] << " " ; 
-            //fs2 << data[i].source2[j] << " " ; 
+        //    fprintf(fP , "%.9f ", data[i].pressure[j]);
+        //    fprintf(fgradP, "%.9f %.9f %.9f\n", data[i].gradP[j].x
+        //                                      , data[i].gradP[j].y
+        //                                      , data[i].gradP[j].z);
+        //    //fs1 << data[i].source1[j] << " " ; 
+        //    //fs2 << data[i].source2[j] << " " ; 
 
         }
-        //cout << endl;
+        ////cout << endl;
         fprintf(fs1, "\n");
         fprintf(fs2, "\n");
-        fprintf(fP , "\n");
+        //fprintf(fP , "\n");
         //fs1  << endl; 
         //fs2  << endl;
         //fpos << data[i].positions << endl; 
-        fprintf(fpos, "%.9f %.9f %.9f\n", data[i].positions.x
-                                      , data[i].positions.y
-                                      , data[i].positions.z);
-        fprintf(fnor, "%.9f %.9f %.9f\n", data[i].normals.x
-                                      , data[i].normals.y
-                                      , data[i].normals.z);
+        //fprintf(fpos, "%.9f %.9f %.9f\n", data[i].positions.x
+        //                              , data[i].positions.y
+        //                              , data[i].positions.z);
+        //fprintf(fnor, "%.9f %.9f %.9f\n", data[i].normals.x
+        //                              , data[i].normals.y
+        //                              , data[i].normals.z);
     }
+
+    fclose(fs1);
+    fclose(fs1);
+
 
     //for (unsigned int i=0; i<NCell; i++)
     //{

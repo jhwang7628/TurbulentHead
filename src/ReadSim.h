@@ -1,11 +1,10 @@
 #ifndef READSIM_H
 #define READSIM_H
 
-#ifndef VECTOR3_H 
 #include "Vector3.h"
-#endif
-
 #include <vector> 
+#include <string>
+#include <iostream>
 
 class vertexData;
 class Data; 

@@ -1,6 +1,8 @@
 #include "colorFace.h"
 #include "loadOBJ.h"
 #include "ReadSim.h"
+#include "ReadSim2.h"
+//#include "WriteSim.h"
 #include <math.h>
 #include <stdlib.h> 
 #include <sstream> 
@@ -36,8 +38,11 @@ void Viewer::init()
 
   glDisable(GL_LIGHTING);
 
+  //ReadSim(data); 
+  //WriteSim(data);
   readData(); 
-  Nts = data[0].pressure.size(); 
+  //WriteSim(
+  Nts = data[0].source1.size(); 
   NCell = data.size(); 
   std::cout << "Nts is " << Nts << std::endl;
   std::cout << "NCell is " << NCell << std::endl;
@@ -86,7 +91,7 @@ void Viewer::init()
 
   glPointSize(5.0);
   setGridIsDrawn(false);
-  setAnimationPeriod(15);
+  setAnimationPeriod(1/5000);
   startAnimation();
 }
 
@@ -130,7 +135,6 @@ void Viewer::keyPressEvent(QKeyEvent *e)
   else if ((e->key()==Qt::Key_C) && (modifiers==Qt::NoButton))
 	  {
           singleChannel_ = !singleChannel_;
-          source1max = source1max*1.1; 
 	  }
 
         
@@ -144,7 +148,8 @@ void Viewer::keyPressEvent(QKeyEvent *e)
 
 void Viewer::readData() 
 { 
-   ReadSim(data); 
+  ReadSim(data); 
+  //ReadSim2(data);
 } 
 
 void Viewer::draw()
@@ -188,6 +193,7 @@ void Viewer::animate()
    //particle_[i].animate(data[i].source1, data[i].source2);
   }
   std::cout << " color red is " <<  particle_[0].col_r << std::endl;
+  std::cout << " singleChannel = " <<  singleChannel_ << std::endl;
 }
 
 ///////////////////////   P a r t i c l e   ///////////////////////////////

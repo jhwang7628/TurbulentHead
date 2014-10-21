@@ -484,6 +484,7 @@ void surface::findShareTriangles(const int ind_xi, const int ind_xj, const vecto
 
 void surface::computeK()
 {
+    cout << "compute K" << endl;
 
    int Nvert = (this->vertlist).size();
 
