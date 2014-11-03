@@ -38,27 +38,57 @@ ratio = ceil(44000/5000);
 t = linspace(0,1/5000*size(s1,2),size(s1,2));
 ti= linspace(0,1/5000*size(s1,2),size(s1,2)*ratio);
 s1interp = zeros(NCell, size(s1,2)*ratio);
-s2interp = zeros(NCell, size(s2,2)*ratio);
-sound = zeros(NCell,size(s1,2)*ratio,2);
+sound_1 = zeros(NCell,size(s1,2)*ratio,2);
 for ii = 1:NCell
-    fprintf('upsamping and convoluting cell %i\n', ii);
+    fprintf('upsamping and convoluting cell %i for source 1\n', ii);
     s1interp(ii,:) = interp1(t,s1(ii,:),ti,'spline');
-    s2interp(ii,:) = interp1(t,s2(ii,:),ti,'spline');
     % fprintf('convoluting cell %i\n', ii);
-    sound(ii,:,1) = conv(s1interp(ii,:),HRIR(ii,:,1),'same');
-    sound(ii,:,2) = conv(s2interp(ii,:),HRIR(ii,:,2),'same');
+    sound_1(ii,:,1) = conv(s1interp(ii,:),HRIR(ii,:,1),'same');
+    sound_1(ii,:,2) = conv(s1interp(ii,:),HRIR(ii,:,2),'same');
 end
 
-clear s1 s2 s1interp s2interp;
+clear s1 s1interp;
 
 toc
 tic
 fprintf('saving matlab workspace\n')
-save('-v7.3','sound.mat','sound')
+save('-v7.3','sound_1.mat','sound_1')
 
-SUM_sound = squeeze(sum(sound,1));
+SUM_sound_1 = squeeze(sum(sound_1,1));
 fprintf('writing sound\n')
-audiowrite('sound.wav',SUM_sound/max(max(abs(SUM_sound))),44000);
+audiowrite('sound_1.wav',SUM_sound_1/max(max(abs(SUM_sound_1))),44000);
+
+
+clear sound_1;
+
+%upsampling
+%
+s2interp = zeros(NCell, size(s2,2)*ratio);
+sound_2 = zeros(NCell,size(s2,2)*ratio,2);
+for ii = 1:NCell
+    fprintf('upsamping and convoluting cell %i for source 2\n', ii);
+    s2interp(ii,:) = interp1(t,s2(ii,:),ti,'spline');
+    % fprintf('convoluting cell %i\n', ii);
+    sound_2(ii,:,1) = conv(s2interp(ii,:),HRIR(ii,:,1),'same');
+    sound_2(ii,:,2) = conv(s2interp(ii,:),HRIR(ii,:,2),'same');
+end
+
+clear s2 s2interp;
+
+toc
+tic
+fprintf('saving matlab workspace\n')
+save('-v7.3','sound_2.mat','sound_2')
+
+SUM_sound_2 = squeeze(sum(sound_2,1));
+fprintf('writing sound\n')
+audiowrite('sound_2.wav',SUM_sound_2/max(max(abs(SUM_sound_2))),44000);
+
+
+
+
+audiowrite('sound.wav',(SUM_sound_2+SUM_sound_1)/max(max(abs(SUM_sound_1 + SUM_sound_2))),44000);
+
 
 toc
 %downsampling
