@@ -201,6 +201,12 @@ void Mesh::readMesh ()
 
     const char* filename = "jhwang.msh";
 
+    string mshName; 
+    cout << "Input the fluent mesh name: " << endl;
+    getline(cin,mshName);
+
+    filename = mshName.c_str();
+
     string filename_out(string(filename)+".obj");
 
     FILE * fobj; 
@@ -611,9 +617,9 @@ void Viewer::init()
    singleChannel_ = false;
 
    // const char* filename;
-   string filename;
-   cout << "Input the OBJ file to read: " << endl;
-   getline(cin, filename);
+   //string filename;
+   //cout << "Input the OBJ file to read: " << endl;
+   //getline(cin, filename);
 
    //mesh->readOBJ(filename);
    mesh->readMesh();
