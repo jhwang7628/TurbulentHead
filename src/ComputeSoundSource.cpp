@@ -24,24 +24,30 @@ int main(int argc, char** argv)
 
     /* Mesh reader */ 
     
-    string tmp("jhwang.msh");
+    string tmp ("jhwang.msh");
+    string tmp2("computedK.txt");
     Mesh mesh(tmp);
-    int Nts; 
-    int NCell;
-    int counter;
-    vector<vertexData> data; 
-    double source1max, source2max; 
     
-    cout << " testing " << endl;
     mesh.readMesh();
     mesh.ExtractSurface();
-    mesh.extractedSurface->printOBJ(tmp+".obj");
+    mesh.extractedSurface->printOBJ("./out/"+tmp+".obj");
     
     /* Curvature calculation */ 
-    mesh.assignK();
-    double max_curv;
-    
+    mesh.extractedSurface->computeK();
+    mesh.extractedSurface->writeK("./out/"+tmp2);
+
+    /* Fluent Simulation data reader */
+    mesh.extractedSurface->ReadSimulation();
+
+    mesh.extractedSurface->setSimDim(mesh.extractedSurface->vertlist.size(),
+                                     mesh.extractedSurface->vertlist[0].pressure.size());
+    mesh.extractedSurface->print2WaveSolver("./out/wavesolver_input");
+
     /* Acoustic sources calculation */ 
+
+    mesh.extractedSurface->computeDipole();
+    mesh.extractedSurface->writeSources();
+
     
     /* OpenGL rendering */
     

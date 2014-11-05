@@ -219,7 +219,7 @@ void ReadSim(vector<vertexData> & data) {
     }
 
     fclose(fs1);
-    fclose(fs1);
+    fclose(fs2);
 
 
     //for (unsigned int i=0; i<NCell; i++)
