@@ -27,13 +27,13 @@ class Mesh
     public : 
         surface* meshSurface; 
         surface* extractedSurface;
-        string mshName;
+        string mshName_;
         void readMesh();
         void readOBJ(std::string filename);
         void ExtractSurface();
         Mesh(string f) 
         {
-            mshName = f;
+            mshName_ = f;
         }
            
 };
@@ -185,18 +185,20 @@ class vert
             Vector3<double> PosDiff = position - v.position;
             return PosDiff.norm();
         }
-        void printDetailInfo()
+        void printDetailInfo(bool splitingLine_flag) const
         {
-            cout << " ============ vertex information ============= " << endl;
+            if (splitingLine_flag)
+                cout << " ============ vertex information ============= " << endl;
 
-            if (isOnSurface) { cout << "This vertex is on the surface. " << endl; } 
-            else { cout << "This vertex is not on the surface. " << endl; } 
+            //if (isOnSurface) { cout << "This vertex is on the surface. " << endl; } 
+            //else { cout << "This vertex is not on the surface. " << endl; } 
 
             cout << "Position = " << position << endl;
             cout << "Normal = " << normal << endl; 
             cout << "Curvature = " << curvature << endl; 
 
-            cout << "----- N1 neighbors information -----" << endl; 
+            if (splitingLine_flag)
+                cout << "----- N1 neighbors information -----" << endl; 
             cout << "It has " << N1neighbors.size() << " N1 neighboring triangles" << endl; 
             for (size_v jj = 0; jj<N1neighbors.size(); jj++)
             {

@@ -15,12 +15,8 @@ void Mesh::readMesh ()
 { 
     meshSurface = new surface();
 
-    const char* filename = mshName.c_str();
-
-    string filename_out(string(filename)+".obj");
-
-    //FILE * fobj; 
-    //fobj = fopen(filename_out.c_str(),"w");
+    string filename_ = "mesh/fluentInterface/"+mshName_; 
+    const char* filename = (filename_.c_str());
 
     ifstream inhead(filename, ios::in); 
     if (!inhead) 
@@ -298,6 +294,12 @@ void surface::printOBJ(string objname)
     FILE *fobj;
 
     fobj = fopen(objname.c_str(),"w");
+
+    if (!fobj) 
+    {
+        cerr << "cannot open " << objname << " for printing. Exiting." << endl;
+        exit(1);
+    }
 
     for (unsigned int i=0; i<vertlist.size(); i++)
     {

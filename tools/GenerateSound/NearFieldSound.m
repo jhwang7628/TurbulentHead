@@ -39,18 +39,18 @@ end
 
 
 % Utilize the linear interpolation and linearity in convolution we can sum before interpolation and convolution
-if (isConv && strcmp(ConvScheme, 'linear'))
+if (~isConv && strcmp(ConvScheme, 'linear'))
 
     %% sum over cells 
     fprintf('doing integrals\n') % right now its just simple summation
-    SUM_s1 = sum(s1,2); 
-    SUM_s2 = sum(s2,2);
+    SUM_s1 = sum(s1,1); 
+    SUM_s2 = sum(s2,1);
     SUM_s = SUM_s1 + SUM_s2; 
 
     fprintf('writing sound\n')
-    audiowrite('soundsource1.wav', SUM_s1(1001:end)/max(abs(SUM_s1(1001:end))), 5000); 
-    audiowrite('soundsource2.wav', SUM_s2(1001:end)/max(abs(SUM_s2(1001:end))), 5000); 
-    audiowrite('soundsource.wav' , SUM_s (1001:end)/max(abs(SUM_s (1001:end))), 5000); 
+    audiowrite('out/soundsource1.wav', SUM_s1(1001:end)/max(abs(SUM_s1(1001:end))), 5000); 
+    audiowrite('out/soundsource2.wav', SUM_s2(1001:end)/max(abs(SUM_s2(1001:end))), 5000); 
+    audiowrite('out/soundsource.wav' , SUM_s (1001:end)/max(abs(SUM_s (1001:end))), 5000); 
 
 
     %% for interpolation
@@ -61,7 +61,7 @@ if (isConv && strcmp(ConvScheme, 'linear'))
     % SUM_s1interp = interp1(t,SUM_s1,ti,ConvScheme);
     % SUM_s2interp = interp2(t,SUM_s2,ti,ConvScheme);
 
-else %~(isConv && strcmp(ConvScheme, 'linear')) 
+else %~(~isConv && strcmp(ConvScheme, 'linear')) 
 
     %% upsampling
     ratio = ceil(44000/5000);

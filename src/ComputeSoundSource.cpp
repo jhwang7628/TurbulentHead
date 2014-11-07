@@ -23,18 +23,21 @@ int main(int argc, char** argv)
 {
 
     /* Mesh reader */ 
-    
-    string tmp ("jhwang.msh");
-    string tmp2("computedK.txt");
-    Mesh mesh(tmp);
+   
+    string mshName;
+    cout << "Input the msh name (excluding path; I will assume its in ./mesh/fluentInterface. Can't handle other situation): ";
+    getline(cin, mshName);
+    //string tmp ("jhwang.msh");
+    string outK("computedK.txt");
+    Mesh mesh(mshName);
     
     mesh.readMesh();
     mesh.ExtractSurface();
-    mesh.extractedSurface->printOBJ("./out/"+tmp+".obj");
+    mesh.extractedSurface->printOBJ("./out/"+mshName+".obj");
     
     /* Curvature calculation */ 
     mesh.extractedSurface->computeK();
-    mesh.extractedSurface->writeK("./out/"+tmp2);
+    mesh.extractedSurface->writeK("./out/"+outK);
 
     /* Fluent Simulation data reader */
     mesh.extractedSurface->ReadSimulation();
