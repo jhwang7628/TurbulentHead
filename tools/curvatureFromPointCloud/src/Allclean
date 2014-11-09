@@ -1,1 +1,0 @@
-rm -r *.app *.o Makefile 
