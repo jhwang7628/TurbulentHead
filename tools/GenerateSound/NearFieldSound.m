@@ -52,6 +52,10 @@ if (~isConv && strcmp(ConvScheme, 'linear'))
     audiowrite('out/soundsource2.wav', SUM_s2(1001:end)/max(abs(SUM_s2(1001:end))), 5000); 
     audiowrite('out/soundsource.wav' , SUM_s (1001:end)/max(abs(SUM_s (1001:end))), 5000); 
 
+    tmp = SUM_s (1001:end)/max(abs(SUM_s (1001:end)));
+
+    save('SUM.txt','tmp','-ascii')
+
 
     %% for interpolation
     % ratio = ceil(44000/5000);
