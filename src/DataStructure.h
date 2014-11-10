@@ -4,6 +4,7 @@
 #include <iostream> 
 #include <vector> 
 #include "Vector3.h" 
+#include <cmath>
 #include <QGLViewer/qglviewer.h>
 
 using namespace std; 
@@ -44,6 +45,12 @@ class surface
         string type; 
         uint NCell_; 
         uint Nts_; 
+        vector<double> source1_s;
+        vector<double> source2_s; 
+        void sumSources_direct(); 
+        void sumSources_areaWeighted(); 
+        void sumSources_areaWeighted_FreeSpaceG();
+        void sumSources_areaWeighted_SphereHeadG();
     public : 
         vector<tri> trilist; 
         vector<vert> vertlist;
@@ -63,7 +70,8 @@ class surface
         void computeMaxK(); 
         void ReadSimulation();
         void computeDipole();
-        void writeSources();
+        void sumSources();
+        void writeData();
 
         void setSimDim(const uint &NCell, const uint &Nts);
         // ---------- Constructor ------------ //
@@ -147,6 +155,7 @@ class vert
         int correspondVert; 
         // for curvature
         double A_mixed; // see Mark Meyer's discrete curvature paper
+        double A_Voronoi_sum;
         double curvature;
         bool isnan;
         Vector3<double> K_xi_wo_Amixed;
@@ -261,6 +270,16 @@ class vert
             for (int i=0; i<p_size; i++) 
             {
                 os << gradP[i] << std::endl; 
+            }
+        }
+
+        void computeA_Voronoi_Sum()
+        {
+            A_Voronoi_sum = 0.0;
+            for (uint i=0; i<N1neighbors.size(); i++) 
+            {
+                if (isfinite(N1neighbors[i].A_Voronoi)) 
+                    A_Voronoi_sum += N1neighbors[i].A_Voronoi; 
             }
         }
 

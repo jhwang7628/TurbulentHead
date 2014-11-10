@@ -33,23 +33,28 @@ int main(int argc, char** argv)
     
     mesh.readMesh();
     mesh.ExtractSurface();
-    mesh.extractedSurface->printOBJ("./out/"+mshName+".obj");
+    //mesh.extractedSurface->printOBJ("./out/"+mshName+".obj");
     
     /* Curvature calculation */ 
     mesh.extractedSurface->computeK();
-    mesh.extractedSurface->writeK("./out/"+outK);
+    //mesh.extractedSurface->writeK("./out/"+outK);
 
     /* Fluent Simulation data reader */
     mesh.extractedSurface->ReadSimulation();
 
     mesh.extractedSurface->setSimDim(mesh.extractedSurface->vertlist.size(),
                                      mesh.extractedSurface->vertlist[0].pressure.size());
-    mesh.extractedSurface->print2WaveSolver("./out/wavesolver_input");
+    //iesh.extractedSurface->print2WaveSolver("./out/wavesolver_input");
 
     /* Acoustic sources calculation */ 
 
     mesh.extractedSurface->computeDipole();
-    mesh.extractedSurface->writeSources();
+
+    mesh.extractedSurface->sumSources();
+
+
+
+    mesh.extractedSurface->writeData();
 
     
     /* OpenGL rendering */

@@ -59,11 +59,10 @@ void surface::computeK()
          }
 
          vertlist[i].K_xi_wo_Amixed = vertlist[i].K_xi_wo_Amixed + PR.mul(cotQ) + PQ.mul(cotR);
+         vertlist[i].N1neighbors[j].A_Voronoi = 1.0/8.0*(PR2*cotQ + PQ2*cotR);
 
          if (!vertlist[i].N1neighbors[j].neighborTri.isObtuse) 
          {
-            vertlist[i].N1neighbors[j].A_Voronoi = 1.0/8.0*(PR2*cotQ + PQ2*cotR);
-
             //cout << "is NOT Obtuse!" << endl;
             //cout << "Voronoi region added" << endl;
             vertlist[i].A_mixed += vertlist[i].N1neighbors[j].A_Voronoi; 
