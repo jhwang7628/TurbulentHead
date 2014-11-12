@@ -135,7 +135,7 @@ void surface::sumSources_areaWeighted_FreeSpaceG() {
 
         for (uint j=0; j<NCell_; j++) 
         {
-            double r = (ListeningPosition.at(i) - vertlist[j].position).norm();
+            double r = (ListeningPosition[i] - vertlist[j].position).norm();
             uint t_shift = floor(r/340.0*5000); // quantized t_shift
             for (uint k=0; k<Nts_; k++)
             {
@@ -154,17 +154,6 @@ void surface::sumSources_areaWeighted_FreeSpaceG() {
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
     /* Fluent Simulation data reader */
     mesh.extractedSurface->ReadSimulation();
-    
+
     /* Curvature calculation */ 
     mesh.extractedSurface->computeK();
 
@@ -54,11 +54,6 @@ int main(int argc, char** argv)
     mesh.extractedSurface->writeSourcesSum(); 
     mesh.extractedSurface->printOBJ("./out/"+string(argv[1])+".obj");
     mesh.extractedSurface->print2WaveSolver("./out/wavesolver_input");
-
-
-
-
-
     
     /* OpenGL rendering */
     

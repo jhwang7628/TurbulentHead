@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <stdio.h>
+#include <cmath>
 #include "DataStructure.h" 
 
 using namespace std; 
@@ -169,11 +170,16 @@ void Mesh::readMesh ()
             // NOTE: in-place cross product applied here!
             Vector3<double> triNormal = v01.cross(v02);
 
+
             newTri.area = 0.5*triNormal.norm();
-            // add the area-weighted triangle normal to the vertex 
-            meshSurface->vertlist[i0].normal.add(triNormal); 
-            meshSurface->vertlist[i1].normal.add(triNormal); 
-            meshSurface->vertlist[i2].normal.add(triNormal); 
+
+            if (isfinite(newTri.area))
+            {
+                // add the area-weighted triangle normal to the vertex 
+                meshSurface->vertlist[i0].normal.add(triNormal); 
+                meshSurface->vertlist[i1].normal.add(triNormal); 
+                meshSurface->vertlist[i2].normal.add(triNormal); 
+            }
 
             //cout << "isOnSurface of this vertex "  << meshSurface->vertlist[i0].isOnSurface << endl;
             meshSurface->vertlist[i0].isOnSurface = true; 
@@ -211,7 +217,6 @@ void Mesh::readMesh ()
         if (meshSurface->vertlist[i].isOnSurface)
         {
             meshSurface->vertlist[i].normal.normalize();
-            //cout << "vert " << i << " normal: ----------------------------------- " << meshSurface->vertlist[i].normal << endl;a
         }
     }
 

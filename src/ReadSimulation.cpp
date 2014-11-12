@@ -136,12 +136,16 @@ void surface::ReadSimulation() {
                 iV = SearchTable[count]; 
             }
 
-            if (initializeSearch) 
-            {
-                vertlist.at(iV).normal.x = nx;
-                vertlist.at(iV).normal.y = ny;
-                vertlist.at(iV).normal.z = nz;
-            }
+            //if (initializeSearch) 
+            //{
+            //    cout << "===================================" << iV << endl;
+            //    cout << vertlist.at(iV).normal << endl;
+            //    //vertlist.at(iV).normal.x = nx;
+            //    vertlist.at(iV).normal.y = ny;
+            //    vertlist.at(iV).normal.z = nz;
+            //    vertlist.at(iV).normal.normalize();
+            //    cout << vertlist.at(iV).normal << endl;
+            //}
           
             vertlist.at(iV).pressure.push_back(pres); 
             Vector3<double> currentGradP(dpx,dpy,dpz);

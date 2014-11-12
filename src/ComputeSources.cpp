@@ -11,7 +11,7 @@ void surface::computeDipole()
         for (uint j=0; j<this->Nts_; j++) 
         {
             // source 1: dp/dn
-            vertlist[i].source1.push_back(vertlist[i].gradP[j].dot(vertlist[i].normal.normalize()));
+            vertlist[i].source1.push_back(vertlist[i].gradP[j].dot(vertlist[i].normal));
             // source 2: p*curvature
             vertlist[i].source2.push_back(vertlist[i].pressure[j]*vertlist[i].curvature);
         }
