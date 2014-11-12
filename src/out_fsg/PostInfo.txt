@@ -6,4 +6,4 @@ Read Surface Pressure skip 0 files
 
 Postprocessing: 
 -------------- 
-Sum Method: direct
+Sum Method: Voronoi area weighted with free-space-Green's-function.

@@ -2,6 +2,10 @@
 #include <iostream> 
 #include <stdio.h>
 #include <cstdlib> 
+#include <cmath>
+#include <vector> 
+#include <string>
+#include "Vector3.h"
 
 using namespace std;
 
@@ -15,7 +19,7 @@ void surface::sumSources() {
         return;
     }
 
-    uint sum_method = 1;
+    uint sum_method = 0;
 
 
     switch (sum_method) 
@@ -95,8 +99,8 @@ void surface::sumSources_areaWeighted() {
         source1_s.push_back(current_s1sum); 
         source2_s.push_back(current_s2sum); 
 
-        //cout << "sum of source 1 at timestep " << i << " = " << current_s1sum << endl;
-        //cout << "sum of source 2 at timestep " << i << " = " << current_s2sum << endl;
+        cout << "sum of source 1 at timestep " << i << " = " << current_s1sum << endl;
+        cout << "sum of source 2 at timestep " << i << " = " << current_s2sum << endl;
 
     }
 
@@ -106,10 +110,61 @@ void surface::sumSources_areaWeighted() {
 
 /* 
  * Sum of the sound sources weighted by the vertex Voronoi area
+ *
+ * input: list of listening position
+ * 
  */
 void surface::sumSources_areaWeighted_FreeSpaceG() { 
 
     cout << "sum the sources weighted with Voronoi area using free space Green's function" << endl;
+
+    // construct the vector of listening position
+    vector<Vector3<double> > ListeningPosition;
+
+    Vector3<double> l0(0.0,0.0,0.0);
+    ListeningPosition.push_back(l0);
+
+
+
+    uint N = ListeningPosition.size();
+
+    for (uint i=0; i<N; i++) 
+    {
+        vector<double> current_s1sum(Nts_,0.0); 
+        vector<double> current_s2sum(Nts_,0.0); 
+
+        for (uint j=0; j<NCell_; j++) 
+        {
+            double r = (ListeningPosition.at(i) - vertlist[j].position).norm();
+            uint t_shift = floor(r/340.0*5000); // quantized t_shift
+            for (uint k=0; k<Nts_; k++)
+            {
+                if (k>=t_shift) // if smaller than padded with zero
+                {
+                    uint kk = k-t_shift;
+                    current_s1sum[kk] += -1.0/4.0/3.1415926*vertlist[j].source1[kk]/r*vertlist[j].A_Voronoi_sum;
+                    current_s2sum[kk] += -1.0/4.0/3.1415926*vertlist[j].source2[kk]/r*vertlist[j].A_Voronoi_sum;
+                }
+            }
+        }
+
+        source1_s = current_s1sum;
+        source2_s = current_s2sum;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -124,6 +179,8 @@ void surface::sumSources_areaWeighted_SphereHeadG() {
 
     cout << "sum the sources weighted with Voronoi area using spherical head Green's function" << endl;
     cout << "Warning: not yet implmented." << endl;
+
+
 }
 
 

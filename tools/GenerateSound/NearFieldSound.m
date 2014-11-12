@@ -1,7 +1,7 @@
 % function NearFieldSound(data_read, IR_read, isConv, ConvScheme)
 %
 tic
-data_read = 1
+data_read = 0
 IR_read = 0
 isConv = 0
 % ConvScheme = 'spline'
@@ -42,9 +42,14 @@ end
 if (~isConv && strcmp(ConvScheme, 'linear'))
 
     %% sum over cells 
-    fprintf('doing integrals\n') % right now its just simple summation
-    SUM_s1 = sum(s1,1); 
-    SUM_s2 = sum(s2,1);
+    % fprintf('doing integrals\n') % right now its just simple summation
+    % SUM_s1 = sum(s1,1); 
+    % SUM_s2 = sum(s2,1);
+    % SUM_s = SUM_s1 + SUM_s2; 
+    %
+
+    SUM_s1 = load('out/source1_sum.txt');
+    SUM_s2 = load('out/source2_sum.txt');
     SUM_s = SUM_s1 + SUM_s2; 
 
     fprintf('writing sound\n')
@@ -54,7 +59,7 @@ if (~isConv && strcmp(ConvScheme, 'linear'))
 
     tmp = SUM_s (1001:end)/max(abs(SUM_s (1001:end)));
 
-    save('SUM.txt','tmp','-ascii')
+    % save('SUM.txt','tmp','-ascii')
 
 
     %% for interpolation
