@@ -29,12 +29,16 @@ class Mesh
         surface* meshSurface; 
         surface* extractedSurface;
         string mshName_;
+        string dir; 
+        string file_start_string; 
         void readMesh();
         void readOBJ(std::string filename);
         void ExtractSurface();
-        Mesh(string f) 
+        Mesh(string f, string d, string fss) 
         {
             mshName_ = f;
+            dir = d; 
+            file_start_string = fss; 
         }
            
 };
@@ -43,6 +47,9 @@ class surface
 { 
     private : 
         string type; 
+        string dir_; 
+        string file_start_string_;
+        string sum_method_;
         uint NCell_; 
         uint Nts_; 
         vector<double> source1_s;
@@ -59,28 +66,41 @@ class surface
         double maxK;
 
         // ---------- helper methods ------------ //
+        void setSimDim(const uint &NCell, const uint &Nts);
+        void setVar();
+
         void findShareTriangles(const int ind_xi, const int ind_xj, 
                                 const vector<tri>& triRange, 
                                 vector<double>& alpha);
-        void computeK(); 
-        void writeK(string Kname);
         int findClosest(const vert & v);
+
+        void ReadSimulation();
+
+        void computeK(); 
+        void computeMaxK(); 
+        void computeDipole();
+        void computeVertVoronoi();
+
+        void sumSources();
+        void writeK();
+        void writePressure();
+        void writeSources();
+        void writeSourcesSum();
+        void writeVertVoronoi();
+        void writePostInfo();
         void printOBJ(string objname);
         void print2WaveSolver(string filename);
-        void computeMaxK(); 
-        void ReadSimulation();
-        void computeDipole();
-        void sumSources();
-        void writeData();
 
-        void setSimDim(const uint &NCell, const uint &Nts);
         // ---------- Constructor ------------ //
-        surface()
+        surface(string dir, string file_start_string)
         { 
             type="mesh";
             maxK = 0.0;
             NCell_ = 0;
             Nts_ = 0;
+            dir_ = dir;
+            file_start_string_ = file_start_string;
+            sum_method_ = "not recorded";
         }
         
         // ----------- Operator overload ---------- //
@@ -134,7 +154,7 @@ class neighbor
 {
     public: 
         tri neighborTri; 
-        double A_Voronoi; // corresponding to the neighborTri;
+        double A_Voronoi; // Voronoi area in the neighborTri;
 };
 
 

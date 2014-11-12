@@ -24,37 +24,40 @@ int main(int argc, char** argv)
 
     /* Mesh reader */ 
    
-    string mshName;
-    cout << "Input the msh name (excluding path; I will assume its in ./mesh/fluentInterface. Can't handle other situation): ";
-    getline(cin, mshName);
-    //string tmp ("jhwang.msh");
-    string outK("computedK.txt");
-    Mesh mesh(mshName);
+    if (argc < 2) 
+    {
+        cout << "usage: ./ComputeSoundSource mshName(in mesh/fluentInterface folder) SurfacePressure_path file_start_string(uint)" << endl;
+        exit(1);
+    }
+    
+
+    Mesh mesh(argv[1], argv[2], argv[3]);
     
     mesh.readMesh();
     mesh.ExtractSurface();
-    //mesh.extractedSurface->printOBJ("./out/"+mshName+".obj");
-    
-    /* Curvature calculation */ 
-    mesh.extractedSurface->computeK();
-    //mesh.extractedSurface->writeK("./out/"+outK);
 
     /* Fluent Simulation data reader */
     mesh.extractedSurface->ReadSimulation();
-
-    mesh.extractedSurface->setSimDim(mesh.extractedSurface->vertlist.size(),
-                                     mesh.extractedSurface->vertlist[0].pressure.size());
-    //iesh.extractedSurface->print2WaveSolver("./out/wavesolver_input");
+    
+    /* Curvature calculation */ 
+    mesh.extractedSurface->computeK();
 
     /* Acoustic sources calculation */ 
-
+    mesh.extractedSurface->computeVertVoronoi(); // for surface intergral 
     mesh.extractedSurface->computeDipole();
-
     mesh.extractedSurface->sumSources();
 
+    mesh.extractedSurface->writeK();
+    mesh.extractedSurface->writeVertVoronoi(); 
+    mesh.extractedSurface->writePostInfo();
+    //mesh.extractedSurface->writeSources();
+    mesh.extractedSurface->writeSourcesSum(); 
+    mesh.extractedSurface->printOBJ("./out/"+string(argv[1])+".obj");
+    mesh.extractedSurface->print2WaveSolver("./out/wavesolver_input");
 
 
-    mesh.extractedSurface->writeData();
+
+
 
     
     /* OpenGL rendering */

@@ -21,10 +21,10 @@ void surface::ReadSimulation() {
 
     /* Read lists from directory */
     //string dir = string("../testData");
-    string dir;
+    //string dir;
     string dir_out;
-    cout << "Where are the surfacepressure data? input directory path: " << endl;
-    getline(cin, dir);
+    //cout << "Where are the surfacepressure data? input directory path: " << endl;
+    //getline(cin, dir);
     //cout << "Select output directory:" << endl;
     //getline(cin, dir_out);
     dir_out = "out";
@@ -33,8 +33,8 @@ void surface::ReadSimulation() {
     /* Getting the filenames in the directory that starts with "Pressure" */
     DIR *dp;
     struct dirent *dirp;
-    if((dp  = opendir(dir.c_str())) == NULL) {
-        cerr << "Error(" << errno << ") opening " << dir << endl;
+    if((dp  = opendir(dir_.c_str())) == NULL) {
+        cerr << "Error(" << errno << ") opening " << dir_ << endl;
         exit(1);
     }
 
@@ -56,10 +56,10 @@ void surface::ReadSimulation() {
     
    
     /* prompt file reading range */
-    string file_start_string; 
-    cout << "input file_start: (0 for reading entire data)" << endl;
-    getline(cin,file_start_string);
-    uint file_start = atoi(file_start_string.c_str()); 
+    //string file_start_string; 
+    //cout << "input file_start: (0 for reading entire data)" << endl;
+    //getline(cin,file_start_string);
+    uint file_start = atoi(file_start_string_.c_str()); 
     uint Nts = filenames.size();
 
     if (file_start + Nts > filenames.size())
@@ -78,7 +78,7 @@ void surface::ReadSimulation() {
     for (uint i=file_start; i<Nts+file_start; i++) 
     {
 
-        ifstream fin((dir+"/"+filenames[i]).c_str(),ios::in);
+        ifstream fin((dir_+"/"+filenames[i]).c_str(),ios::in);
         if (fin.is_open()) 
         {
             cout << "File " << filenames[i] << " opened successfully. " 
@@ -160,6 +160,9 @@ void surface::ReadSimulation() {
     }
 
     FST.close();
+
+    // set NCell_ and Nts_ for this surface
+    setSimDim(vertlist.size(), vertlist[0].pressure.size());
 
 }
 

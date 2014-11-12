@@ -1,0 +1,9 @@
+Data Reading: 
+------------- 
+SurfacePressure directory: SurfacePressure
+Read Surface Pressure skip 0 files
+
+
+Postprocessing: 
+-------------- 
+Sum Method: Voronoi area weighted

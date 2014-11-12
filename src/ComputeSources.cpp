@@ -2,7 +2,7 @@
 #include "DataStructure.h"
 #include "Vector3.h"
 
-// source 1: dp/dn
+// compute the dipole sources
 void surface::computeDipole() 
 {
     cout << "computing dipole sources" << endl;
@@ -19,3 +19,5 @@ void surface::computeDipole()
 }
 
 
+
+// compute the quadrupole sources

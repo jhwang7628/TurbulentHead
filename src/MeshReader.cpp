@@ -13,7 +13,7 @@ static const double PI=3.14159265359;
 // read mesh from *.msh file //
 void Mesh::readMesh () 
 { 
-    meshSurface = new surface();
+    meshSurface = new surface(this->dir, this->file_start_string);
 
     string filename_ = "mesh/fluentInterface/"+mshName_; 
     const char* filename = (filename_.c_str());
@@ -240,7 +240,7 @@ void Mesh::ExtractSurface()
 
     cout << "Extract surface" << endl;
 
-    this->extractedSurface = new surface();
+    this->extractedSurface = new surface(this->dir, this->file_start_string);
 
     int count = 0;
     for (uint i=0; i<this->meshSurface->vertlist.size(); i++)

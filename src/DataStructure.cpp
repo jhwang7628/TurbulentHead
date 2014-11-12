@@ -2,6 +2,18 @@
 #include <fstream> 
 #include "DataStructure.h" 
 
+void surface::computeVertVoronoi()
+{
+
+    std::cout << "compute vertex Voronoi area" << endl;
+
+    for (uint i=0; i<NCell_; i++) 
+    {
+        vertlist[i].computeA_Voronoi_Sum(); 
+    }
+
+}
+
 int surface::findClosest(const vert & v)
 {
     double minDistance = 99999;
