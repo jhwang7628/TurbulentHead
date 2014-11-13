@@ -156,6 +156,47 @@ void surface::writeSourcesSum()
 
 }
 
+void surface::writeSourcesSum(const Vector3<double> ListeningPosition)
+{
+    std::cout << "write sources sum with listening position" << std::endl;
+    std::cout << "make sure there is no existing source*_sum.txt files. will cause problems. " << std::endl;
+
+    FILE *fs1_s, *fs2_s, *fLP_s; 
+
+    std::string fs1_s_path = "out/source1_sum.txt";
+    std::string fs2_s_path = "out/source2_sum.txt";
+    std::string fLP_path = "out/ListeningPosition.txt";
+
+    if (!LPopened_) 
+    {
+        fs1_s = fopen(fs1_s_path.c_str(), "w"); 
+        fs2_s = fopen(fs2_s_path.c_str(), "w"); 
+        fLP_s = fopen(fLP_path.c_str()  , "w"); 
+        LPopened_ = true;
+    }
+    else 
+    {
+        fs1_s = fopen(fs1_s_path.c_str(), "a"); 
+        fs2_s = fopen(fs2_s_path.c_str(), "a"); 
+        fLP_s = fopen(fLP_path.c_str()  , "a"); 
+    }
+
+    fprintf(fLP_s, "%.9f %.9f %.9f", ListeningPosition.x, ListeningPosition.y, ListeningPosition.z);
+    for (uint j=0; j<this->Nts_; j++) 
+    {
+        fprintf(fs1_s, "%.9f ", source1_s[j]);
+        fprintf(fs2_s, "%.9f ", source2_s[j]);
+    }
+    fprintf(fs1_s, "\n");
+    fprintf(fs2_s, "\n");
+    fprintf(fLP_s, "\n");
+
+    fclose(fs1_s);
+    fclose(fs2_s);
+    fclose(fLP_s);
+
+}
+
 void surface::writeVertVoronoi()
 {
 

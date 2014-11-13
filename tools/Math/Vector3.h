@@ -181,7 +181,8 @@ class Vector3 : public std::vector<T>
         Vector3<T>& normalize()
         { 
            T normFactor = this->norm();
-           this->div(normFactor); 
+           if (normFactor > (T)1E-9)
+            this->div(normFactor); 
            return *this;
         }
 

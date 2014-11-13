@@ -19,7 +19,7 @@ void surface::sumSources() {
         return;
     }
 
-    uint sum_method = 0;
+    uint sum_method = 2;
 
 
     switch (sum_method) 
@@ -75,6 +75,9 @@ void surface::sumSources_direct() {
 
     }
 
+
+    if (writeSourcesSum_) 
+        writeSourcesSum();
 }
 
 
@@ -104,6 +107,8 @@ void surface::sumSources_areaWeighted() {
 
     }
 
+    if (writeSourcesSum_) 
+        writeSourcesSum();
 
 }
 
@@ -122,14 +127,17 @@ void surface::sumSources_areaWeighted_FreeSpaceG() {
     vector<Vector3<double> > ListeningPosition;
 
     Vector3<double> l0(0.0,0.0,0.0);
+    Vector3<double> r0(0.0,0.0,0.0); 
     ListeningPosition.push_back(l0);
-
+    ListeningPosition.push_back(r0);
 
 
     uint N = ListeningPosition.size();
 
+
     for (uint i=0; i<N; i++) 
     {
+        cout << "working on listening position " << i << " at " << ListeningPosition[i] << endl;
         vector<double> current_s1sum(Nts_,0.0); 
         vector<double> current_s2sum(Nts_,0.0); 
 
@@ -137,6 +145,7 @@ void surface::sumSources_areaWeighted_FreeSpaceG() {
         {
             double r = (ListeningPosition[i] - vertlist[j].position).norm();
             uint t_shift = floor(r/340.0*5000); // quantized t_shift
+            cout << "for cell " << j << ", the time delay is " << t_shift << endl;
             for (uint k=0; k<Nts_; k++)
             {
                 if (k>=t_shift) // if smaller than padded with zero
@@ -151,7 +160,8 @@ void surface::sumSources_areaWeighted_FreeSpaceG() {
         source1_s = current_s1sum;
         source2_s = current_s2sum;
 
-
+        if (writeSourcesSum_) 
+            writeSourcesSum(ListeningPosition[i]);
 
     }
 
@@ -168,7 +178,6 @@ void surface::sumSources_areaWeighted_SphereHeadG() {
 
     cout << "sum the sources weighted with Voronoi area using spherical head Green's function" << endl;
     cout << "Warning: not yet implmented." << endl;
-
 
 }
 

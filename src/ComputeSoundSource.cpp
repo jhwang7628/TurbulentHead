@@ -36,6 +36,8 @@ int main(int argc, char** argv)
     mesh.readMesh();
     mesh.ExtractSurface();
 
+    //mesh.extractedSurface->writeSourcesSum_ = false;
+
     /* Fluent Simulation data reader */
     mesh.extractedSurface->ReadSimulation();
 
@@ -45,13 +47,14 @@ int main(int argc, char** argv)
     /* Acoustic sources calculation */ 
     mesh.extractedSurface->computeVertVoronoi(); // for surface intergral 
     mesh.extractedSurface->computeDipole();
+
     mesh.extractedSurface->sumSources();
 
     mesh.extractedSurface->writeK();
     mesh.extractedSurface->writeVertVoronoi(); 
     mesh.extractedSurface->writePostInfo();
     //mesh.extractedSurface->writeSources();
-    mesh.extractedSurface->writeSourcesSum(); 
+    //mesh.extractedSurface->writeSourcesSum(); 
     mesh.extractedSurface->printOBJ("./out/"+string(argv[1])+".obj");
     mesh.extractedSurface->print2WaveSolver("./out/wavesolver_input");
     

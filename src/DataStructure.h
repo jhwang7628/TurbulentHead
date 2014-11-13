@@ -50,6 +50,7 @@ class surface
         string dir_; 
         string file_start_string_;
         string sum_method_;
+        bool LPopened_;
         uint NCell_; 
         uint Nts_; 
         vector<double> source1_s;
@@ -62,6 +63,7 @@ class surface
         vector<tri> trilist; 
         vector<vert> vertlist;
         int Nnanvert;
+        bool writeSourcesSum_; 
 
         double maxK;
 
@@ -86,6 +88,7 @@ class surface
         void writePressure();
         void writeSources();
         void writeSourcesSum();
+        void writeSourcesSum(const Vector3<double> LP);
         void writeVertVoronoi();
         void writePostInfo();
         void printOBJ(string objname);
@@ -95,6 +98,8 @@ class surface
         surface(string dir, string file_start_string)
         { 
             type="mesh";
+            writeSourcesSum_ = true;
+            LPopened_ = false; 
             maxK = 0.0;
             NCell_ = 0;
             Nts_ = 0;
