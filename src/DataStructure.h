@@ -77,6 +77,7 @@ class surface
         int findClosest(const vert & v);
 
         void ReadSimulation();
+        void ReadFromOut(const string outdir_path);
 
         void computeK(); 
         void computeMaxK(); 

@@ -14,6 +14,132 @@
 
 using namespace std;
 
+/* 
+ * Read sources and NCell_ and Nts_ from harddrive 
+ */ 
+void surface::ReadFromOut(const string dirout_path) { 
+
+    cout << "read simulation data from previous pass at directory " << dirout_path << endl;
+
+
+    // Read Postprocessing information
+    cout << "reading postprocessing information " << endl;
+    string path_post = dirout_path+"/PostInfo.txt";
+    ifstream postinfo(path_post.c_str());
+    if(!postinfo) 
+    {
+        cerr << "cannot open file PostInfo.txt" << endl;
+        exit(1);
+    }
+
+    string line;
+    while(getline(postinfo, line)) 
+    {
+        if (line.substr(0,6) == "NCell_")
+        {
+            istringstream iss(line); 
+            string tmp, tmp2;
+            uint buff; 
+            iss >> tmp >> tmp2 >> buff; 
+            this->NCell_ = buff;
+        }
+        if (line.substr(0,4) == "Nts_")
+        {
+            istringstream iss(line); 
+            string tmp, tmp2;
+            uint buff; 
+            iss >> tmp >> tmp2 >> buff; 
+            iss >> buff; 
+            this->Nts_ = buff;
+            break;
+        }
+    }
+    postinfo.close();
+
+    // Read Position and curvature of vertex
+    cout << "reading position and curvature of vertices" << endl;
+    string path_K = dirout_path + "/computedK.txt";
+    ifstream ifk(path_K.c_str());
+    if(!ifk) 
+    {
+        cerr << "cannot open file computedK.txt" << endl;
+        exit(1);
+    }
+
+    string line_k;
+    while(getline(ifk, line_k)) 
+    {
+        istringstream issk(line_k);
+        double Buffx, Buffy, Buffz, Buffk; 
+        issk >> Buffx >> Buffy >> Buffz >> Buffk;
+
+        vert newVert(Buffx, Buffy, Buffz); 
+        newVert.curvature = Buffk;
+        vertlist.push_back(newVert);
+    }
+    ifk.close();
+
+    // Read Vertex Voronoi area 
+    cout << "reading vertex Voronoi area" << endl;
+    string path_A = dirout_path + "/vertVoronoi.txt"; 
+    ifstream ifA(path_A.c_str()); 
+    if(!ifA) 
+    {
+        cerr << "cannot open file vertVoronoi.txt" << endl;
+        exit(1);
+    }
+
+    string line_A;
+    uint count = 0;
+    getline(ifA,line_A);
+    while(getline(ifA, line_A)) 
+    {
+        istringstream issA(line_A);
+        double Buff, A;  
+        issA >> Buff >> A;
+        vertlist[count].A_Voronoi_sum = A; 
+        count ++;
+    }
+    ifA.close();
+
+    // Read sources
+    cout << "reading vertex sound sources" << endl;
+    string path_fs1 = dirout_path + "/source1.txt"; 
+    string path_fs2 = dirout_path + "/source2.txt"; 
+    ifstream ifs1(path_fs1.c_str()); 
+    ifstream ifs2(path_fs2.c_str()); 
+    if(!ifs1 || !ifs2) 
+    {
+        cerr << "cannot open file source1.txt or file source2.txt" << endl;
+        exit(1);
+    }
+
+    string line_s1, line_s2; 
+    count = 0;
+    while(getline(ifs1,line_s1))
+    {
+        getline(ifs2,line_s2);
+        istringstream iss1(line_s1); 
+        istringstream iss2(line_s2);
+        double doubBuff, doubBuff2; 
+        vector<double> vertsource1;
+        vector<double> vertsource2;
+        while (iss1 >> doubBuff)
+        {
+            iss2 >> doubBuff2;
+            vertsource1.push_back(doubBuff);
+            vertsource2.push_back(doubBuff2);
+        }
+        vertlist[count].source1 = vertsource1; 
+        vertlist[count].source2 = vertsource2; 
+
+        count ++;
+    }
+    ifs1.close();
+    ifs2.close();
+
+}
+
 
 void surface::ReadSimulation() {
 

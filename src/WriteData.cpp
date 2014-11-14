@@ -159,7 +159,8 @@ void surface::writeSourcesSum()
 void surface::writeSourcesSum(const Vector3<double> ListeningPosition)
 {
     std::cout << "write sources sum with listening position" << std::endl;
-    std::cout << "make sure there is no existing source*_sum.txt files. will cause problems. " << std::endl;
+    //std::cout << "make sure there is no existing source*_sum.txt files. will cause problems. " << std::endl;
+
 
     FILE *fs1_s, *fs2_s, *fLP_s; 
 
@@ -214,12 +215,14 @@ void surface::writeVertVoronoi()
         return;
     }
 
-        for (uint j=0; j<NCell_; j++) 
-        {
-            vertlist[j].computeA_Voronoi_Sum(); 
-            //cout << "vert " << j << " has Voronoi area = " << vertlist[j].A_Voronoi_sum << endl;
-            fprintf(fV, "vert %i has Voronoi area = %.9f \n", j, vertlist[j].A_Voronoi_sum);
-        }
+   
+    fprintf(fV, "#no_vert Voronoi area\n");
+    for (uint j=0; j<NCell_; j++) 
+    {
+        vertlist[j].computeA_Voronoi_Sum(); 
+        //cout << "vert " << j << " has Voronoi area = " << vertlist[j].A_Voronoi_sum << endl;
+        fprintf(fV, "%i %.9f \n", j, vertlist[j].A_Voronoi_sum);
+    }
 
 
     fclose(fV);
@@ -247,6 +250,8 @@ void surface::writePostInfo()
     fprintf(f, "\n\n");
     fprintf(f, "Postprocessing: \n"); 
     fprintf(f, "-------------- \n"); 
+    fprintf(f, "NCell_ = %i \n", NCell_);
+    fprintf(f, "Nts_ = %i \n", Nts_);
     fprintf(f, "Sum Method: %s\n", sum_method_.c_str());
 
 }

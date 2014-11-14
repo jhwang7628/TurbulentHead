@@ -75,7 +75,6 @@ void surface::sumSources_direct() {
 
     }
 
-
     if (writeSourcesSum_) 
         writeSourcesSum();
 }
@@ -126,10 +125,16 @@ void surface::sumSources_areaWeighted_FreeSpaceG() {
     // construct the vector of listening position
     vector<Vector3<double> > ListeningPosition;
 
-    Vector3<double> l0(0.0,0.0,0.0);
-    Vector3<double> r0(0.0,0.0,0.0); 
+    Vector3<double> l0(-0.003837, -0.000771, 0.06873);
+    Vector3<double> r0(-0.004511, -0.003068,-0.06568); 
+    Vector3<double> center(0.0,0.0,0.0); 
+    Vector3<double> linf(0.0,0.0,9999); 
+    Vector3<double> tinf(0.0,9999,0.0); 
     ListeningPosition.push_back(l0);
     ListeningPosition.push_back(r0);
+    ListeningPosition.push_back(center);
+    ListeningPosition.push_back(linf);
+    ListeningPosition.push_back(tinf);
 
 
     uint N = ListeningPosition.size();
@@ -145,12 +150,13 @@ void surface::sumSources_areaWeighted_FreeSpaceG() {
         {
             double r = (ListeningPosition[i] - vertlist[j].position).norm();
             uint t_shift = floor(r/340.0*5000); // quantized t_shift
-            cout << "for cell " << j << ", the time delay is " << t_shift << endl;
+            //cout << "for cell " << j << ", the time delay is " << t_shift << endl;
             for (uint k=0; k<Nts_; k++)
             {
                 if (k>=t_shift) // if smaller than padded with zero
                 {
                     uint kk = k-t_shift;
+                    //cout << "kk = " << kk << endl;
                     current_s1sum[kk] += -1.0/4.0/3.1415926*vertlist[j].source1[kk]/r*vertlist[j].A_Voronoi_sum;
                     current_s2sum[kk] += -1.0/4.0/3.1415926*vertlist[j].source2[kk]/r*vertlist[j].A_Voronoi_sum;
                 }
@@ -159,6 +165,7 @@ void surface::sumSources_areaWeighted_FreeSpaceG() {
 
         source1_s = current_s1sum;
         source2_s = current_s2sum;
+
 
         if (writeSourcesSum_) 
             writeSourcesSum(ListeningPosition[i]);
