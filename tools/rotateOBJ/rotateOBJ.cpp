@@ -26,43 +26,36 @@ int main(int argc, char* argv[])
 
    rotationData rot;
 
-   if (argc == 1)
+   if (argc < 2)
    {
-       cout << "no rotation is applied" << endl;
+       cout << "Usage: rotateListeningPosition num_rotations axis-x_i axis-y_i axis-z_i angle_i(deg) in_file. Multiple i is accepted. " << endl;
+       exit(1);
    }
-   else
-   {
-        if ((argc-2)%4 != 0 || (argc-2)/4 != (double) atof(argv[1]))
-        {
-           cout << (argc-2)%4 << endl;
-           cout << (argc-2)/4 << endl;
-           cout << (double) atof(argv[1]) << endl;
-           cout << "Number of input argument is incorrect!" << argc << endl;
-           exit(1);
-        }
-        
-        rot.N = (argc-2)/4;
 
-        for (int i=0; i<rot.N; i++) 
-        {
-           rot.axis.push_back((double) atof(argv[i*4+2]));
-           rot.axis.push_back((double) atof(argv[i*4+3]));
-           rot.axis.push_back((double) atof(argv[i*4+4]));
-           rot.angle.push_back((double) atof(argv[i*4+5])/180*pi);
-           cout << "Rotation axis #" << i << " = ["   << rot.axis[i*3]
-                << " "                                << rot.axis[i*3+1] 
-                << " "                                << rot.axis[i*3+2] << "]" << endl;
-           cout << "Rotation angle #" << i << " = " << rot.angle[i] << "(rad)" << endl;
-        }
-   }
+
+
+    rot.N = (argc-2)/4;
+    
+    for (int i=0; i<rot.N; i++) 
+    {
+       rot.axis.push_back((double) atof(argv[i*4+2]));
+       rot.axis.push_back((double) atof(argv[i*4+3]));
+       rot.axis.push_back((double) atof(argv[i*4+4]));
+       rot.angle.push_back((double) atof(argv[i*4+5])/180*pi);
+       cout << "Rotation axis #" << i << " = ["   << rot.axis[i*3]
+            << " "                                << rot.axis[i*3+1] 
+            << " "                                << rot.axis[i*3+2] << "]" << endl;
+       cout << "Rotation angle #" << i << " = " << rot.angle[i] << "(rad)" << endl;
+    }
 
 
 
    //const char* filename = "HumanHead-2.obj";
    string filename;
-   cout << "Input the obj file that is being rotated: " << endl;
-   getline(cin,filename);
+   //cout << "Input the obj file that is being rotated: " << endl;
+   //getline(cin,filename);
 
+   filename = argv[argc-1];
    data outData1; 
 
 
@@ -77,7 +70,8 @@ void loadOBJ(const char* filename, data outData, rotationData rot)
    ifstream  in(filename, ios::in); 
    FILE * out;
    //ofstream out("newOBJ.obj", ios::out); 
-   out = fopen("newOBJ.obj", "w");
+   string out_file = string(filename) + "_rotated";
+   out = fopen(out_file.c_str(), "w");
 
    //ofstream debug("debug.txt");
    if (!in) { cerr << "Cannot open " << filename << endl; exit(1); }

@@ -20,8 +20,8 @@ using namespace std;
 static const double PI=3.14159265359;
 
 
-DEFINE_string(lppath, "none", "File path for Listening Position. ");
-DEFINE_string(s1path, "none", "If postprocessing was run on this case, point us to the path of the output directory (the one that contains 'source1.txt', for example). "); 
+DEFINE_string(listening_position, "none", "File path for Listening Position. ");
+DEFINE_string(previous_run_dir, "none", "If postprocessing was run on this case, point us to the path of the output directory (the one that contains 'source1.txt', for example). "); 
 
 int main(int argc, char** argv)
 {
@@ -33,14 +33,14 @@ int main(int argc, char** argv)
    
     if (argc < 2) 
     {
-        cout << "usage: ./ComputeSoundSource mshName(in mesh/fluentInterface folder) SurfacePressure_path file_start_string(uint) listeningPostion_path(blank if none) source1.txt_path(blank if none)" << endl;
+        cout << "usage: ./ComputeSoundSource mshName(location: mesh/fluentInterface) SurfacePressure_path file_start_string(uint) [--listening_position LISTENING_POSITION] [--previous_run_dir PREVIOUS_RUN_DIR]" << endl;
         exit(1);
     }
     
 
     Mesh mesh(argv[1], argv[2], argv[3]);
 
-    if (FLAGS_s1path.compare("none") == 0) // not using s1path
+    if (FLAGS_previous_run_dir.compare("none") == 0) // not using s1path
     {
         mesh.readMesh();
         mesh.ExtractSurface();
@@ -66,13 +66,13 @@ int main(int argc, char** argv)
     else 
     {
         mesh.extractedSurface = new surface(mesh.dir, mesh.file_start_string);
-        string outdir_path = FLAGS_s1path; 
+        string outdir_path = FLAGS_previous_run_dir; 
         //string outdir_path = argv[4];
         mesh.extractedSurface->ReadFromOut(outdir_path);
     }
 
 
-    mesh.extractedSurface->set_lppath(FLAGS_lppath);
+    mesh.extractedSurface->set_lppath(FLAGS_listening_position);
     mesh.extractedSurface->sumSources();
     mesh.extractedSurface->writePostInfo();
 

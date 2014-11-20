@@ -26,9 +26,10 @@ int main(int argc, char* argv[])
 
    rotationData rot;
 
-   if (argc <= 2)
+   if (argc < 2)
    {
-       cout << "Usage: rotateListeningPosition in_file num_rotations axis-x_i axis-y_i axis-z_i angle_i(deg). Multiple i is accepted. " << endl;
+       cout << "Usage: rotateListeningPosition num_rotations axis-x_i axis-y_i axis-z_i angle_i(deg) in_file. Multiple i is accepted. " << endl;
+       exit(1);
    }
    else
    {
@@ -98,7 +99,7 @@ void loadFILE(string filename, rotationData rot)
          vector<double> v(3);
          s >> v[0]; s >> v[1]; s >> v[2]; 
 
-         cout << "v " << v[0] << " " << v[1] << " " << v[2] << endl;
+         //cout << v[0] << " " << v[1] << " " << v[2] << endl;
          if (rot.N != 0) 
          {
             for (int i=0; i<rot.N; i++)
@@ -113,7 +114,7 @@ void loadFILE(string filename, rotationData rot)
        
          fprintf(out, "%.9f %.9f %.9f \n", v[0], v[1], v[2]);
 
-         cout << "v " << v[0] << " " << v[1] << " " << v[2] << endl;
+         //cout << v[0] << " " << v[1] << " " << v[2] << endl;
    }
 
 
