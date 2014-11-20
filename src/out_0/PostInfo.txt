@@ -8,4 +8,4 @@ Postprocessing:
 -------------- 
 NCell_ = 38830 
 Nts_ = 6 
-Sum Method: Voronoi area weighted
+Sum Method: Voronoi area weighted with free-space-Green's-function.

@@ -53,11 +53,28 @@ if (~isConv && strcmp(ConvScheme, 'linear'))
     SUM_s = SUM_s1 + SUM_s2; 
 
     fprintf('writing sound\n')
-    audiowrite('out/soundsource1.wav', SUM_s1(1001:end)/max(abs(SUM_s1(1001:end))), 5000); 
-    audiowrite('out/soundsource2.wav', SUM_s2(1001:end)/max(abs(SUM_s2(1001:end))), 5000); 
-    audiowrite('out/soundsource.wav' , SUM_s (1001:end)/max(abs(SUM_s (1001:end))), 5000); 
 
-    tmp = SUM_s (1001:end)/max(abs(SUM_s (1001:end)));
+    for ii=1:size(SUM_s,1)
+        audiowrite(sprintf('out/soundsource%i.wav', ii),SUM_s (ii,1002:end)/max(abs(SUM_s(1,1002:end))), 5000); 
+    end
+%     audiowrite('out/soundsource1.wav', [SUM_s1(1,1002:end)/max(abs(SUM_s1(1002:end)));...
+%                                         SUM_s1(2,1002:end)/max(abs(SUM_s1(1002:end)))].', 5000); 
+%     audiowrite('out/soundsource2.wav', [SUM_s2(1,1002:end)/max(abs(SUM_s2(1002:end)));...
+%                                         SUM_s2(2,1002:end)/max(abs(SUM_s2(1002:end)))].', 5000); 
+%     audiowrite('out/soundsource.wav', [SUM_s(1,1002:end)/max(abs(SUM_s(1002:end)));...
+%                                         SUM_s(2,1002:end)/max(abs(SUM_s(1002:end)))].', 5000); 
+
+%     audiowrite('out/soundsource1.wav', SUM_s1(1,1002:end)/max(abs(SUM_s1(1002:end))), 5000); 
+%     audiowrite('out/soundsource2.wav', SUM_s2(1,2002:end)/max(abs(SUM_s2(1002:end))), 5000); 
+    % audiowrite('out/soundsource1.wav',  SUM_s (1,1002:end)/max(abs(SUM_s(1,1002:end))), 5000); 
+    % audiowrite('out/soundsource2.wav',  SUM_s (2,1002:end)/max(abs(SUM_s(2,1002:end))), 5000); 
+    % audiowrite('out/soundsource3.wav',  SUM_s (3,1002:end)/max(abs(SUM_s(3,1002:end))), 5000); 
+    % audiowrite('out/soundsource4.wav',  SUM_s (4,1002:end)/max(abs(SUM_s(4,1002:end))), 5000); 
+    % audiowrite('out/soundsource5.wav',  SUM_s (5,1002:end)/max(abs(SUM_s(5,1002:end))), 5000); 
+    % audiowrite('out/soundsource6.wav',  SUM_s (6,1002:end)/max(abs(SUM_s(6,1002:end))), 5000); 
+
+
+    % tmp = SUM_s (1001:end)/max(abs(SUM_s (1001:end)));
 
     % save('SUM.txt','tmp','-ascii')
 

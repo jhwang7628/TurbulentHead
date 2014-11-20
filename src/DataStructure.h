@@ -50,6 +50,8 @@ class surface
         string dir_; 
         string file_start_string_;
         string sum_method_;
+        string lppath_; // listening position path
+        uint input_sum_method_;
         bool LPopened_;
         uint NCell_; 
         uint Nts_; 
@@ -58,6 +60,7 @@ class surface
         void sumSources_direct(); 
         void sumSources_areaWeighted(); 
         void sumSources_areaWeighted_FreeSpaceG();
+        void sumSources_areaWeighted_FreeSpaceG_fromFile();
         void sumSources_areaWeighted_SphereHeadG();
     public : 
         vector<tri> trilist; 
@@ -94,6 +97,11 @@ class surface
         void writePostInfo();
         void printOBJ(string objname);
         void print2WaveSolver(string filename);
+        void set_lppath(string lppath)
+        {
+            lppath_ = lppath; 
+        }
+
 
         // ---------- Constructor ------------ //
         surface(string dir, string file_start_string)
