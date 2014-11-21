@@ -8,8 +8,11 @@
 #include <vector> 
 #include <string>
 #include "Vector3.h"
+#include <gflags/gflags.h>
 
 using namespace std;
+
+DECLARE_int32(sum_method);
 
 void surface::sumSources() {
 
@@ -21,7 +24,8 @@ void surface::sumSources() {
         return;
     }
 
-    uint sum_method = 2;
+    //uint sum_method = 2;
+    uint sum_method = FLAGS_sum_method;
     //uint sum_method = input_sum_method_;
 
 
@@ -108,8 +112,8 @@ void surface::sumSources_areaWeighted() {
         source1_s.push_back(current_s1sum); 
         source2_s.push_back(current_s2sum); 
 
-        cout << "sum of source 1 at timestep " << i << " = " << current_s1sum << endl;
-        cout << "sum of source 2 at timestep " << i << " = " << current_s2sum << endl;
+        //cout << "sum of source 1 at timestep " << i << " = " << current_s1sum << endl;
+        //cout << "sum of source 2 at timestep " << i << " = " << current_s2sum << endl;
 
     }
 

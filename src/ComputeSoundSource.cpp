@@ -22,6 +22,8 @@ static const double PI=3.14159265359;
 
 DEFINE_string(listening_position, "none", "File path for Listening Position. ");
 DEFINE_string(previous_run_dir, "none", "If postprocessing was run on this case, point us to the path of the output directory (the one that contains 'source1.txt', for example). "); 
+DEFINE_int32(sum_method, 2, "define sum method: 0->direct, 1->area-weighted, 2->area-weighted and free space G, 3->area-weighted and spherical head G. (Default: 2)");
+
 
 int main(int argc, char** argv)
 {
@@ -33,7 +35,7 @@ int main(int argc, char** argv)
    
     if (argc < 2) 
     {
-        cout << "usage: ./ComputeSoundSource mshName(location: mesh/fluentInterface) SurfacePressure_path file_start_string(uint) [--listening_position LISTENING_POSITION] [--previous_run_dir PREVIOUS_RUN_DIR]" << endl;
+        cout << "usage: ./ComputeSoundSource mshName(location: mesh/fluentInterface) SurfacePressure_path file_start_string(uint) [--listening_position LISTENING_POSITION] [--previous_run_dir PREVIOUS_RUN_DIR] [--sum_method SUM_METHOD]. For options see --help" << endl;
         exit(1);
     }
     
