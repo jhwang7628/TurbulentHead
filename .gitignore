@@ -2,5 +2,6 @@
 *.[oa]
 *.swp
 *.swo
+*.swn
 src/ComputeSoundSource
 src/Makefile
