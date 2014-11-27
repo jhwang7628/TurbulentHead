@@ -22,7 +22,7 @@ void Mesh::readMesh ()
     ifstream inhead(filename, ios::in); 
     if (!inhead) 
     { 
-        cout << "cannot find mesh " << filename << ". Exiting. " << endl;
+        cout << "cannot find mesh (at) " << filename << ". Exiting. " << endl;
         exit(1);
     }
     string line; 

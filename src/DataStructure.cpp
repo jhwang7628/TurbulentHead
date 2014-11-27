@@ -76,6 +76,7 @@ int surface::findClosest(const vert & v)
 
 void surface::setSimDim(const uint & NCell, const uint & Nts) 
 {
+    std::cout << "setting simulation dimension" << std::endl;
     this->NCell_ = NCell; 
     this->Nts_   = Nts; 
 }

@@ -55,7 +55,7 @@ if (~isConv && strcmp(ConvScheme, 'linear'))
     fprintf('writing sound\n')
 
     for ii=1:size(SUM_s,1)
-        audiowrite(sprintf('out/soundsource%i.wav', ii),SUM_s (ii,1002:end)/max(abs(SUM_s(1,1002:end))), 5000); 
+        audiowrite(sprintf('out/soundsource%i.wav', ii),SUM_s (ii,1002:end)/max(abs(SUM_s(ii,1002:end))), 5000); 
     end
 %     audiowrite('out/soundsource1.wav', [SUM_s1(1,1002:end)/max(abs(SUM_s1(1002:end)));...
 %                                         SUM_s1(2,1002:end)/max(abs(SUM_s1(1002:end)))].', 5000); 
