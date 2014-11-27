@@ -1,4 +1,6 @@
 # ignore objects and archives, anywhere in the tree. 
 *.[oa]
+*.swp
+*.swo
 src/ComputeSoundSource
 src/Makefile
